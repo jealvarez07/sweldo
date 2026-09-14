@@ -1,0 +1,10 @@
+{
+  "name": "payslip-decoder",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Philippine payslip decoder — payroll engine and tests. Zero dependencies.",
+  "scripts": {
+    "test": "node lib/payroll.test.js"
+  }
+}

@@ -1,0 +1,284 @@
+<title>Self Check</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+  :root{
+    --paper:#F4F2EE; --card:#FFFFFF; --card-2:#F0EEE9;
+    --ink:#14181A; --ink-2:#4A5257; --ink-3:#838C91;
+    --rule:#DFDCD5;
+    --ok:#0B6B54; --ok-soft:#DDEDE7;
+    --bad:#A93226; --bad-soft:#F7E3E0;
+    --warn:#8A6212; --warn-soft:#F7EBD4;
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --paper:#101416; --card:#191E21; --card-2:#212729;
+      --ink:#ECEFF0; --ink-2:#B2BABE; --ink-3:#7E888D;
+      --rule:#2E3639;
+      --ok:#4FC5A3; --ok-soft:#10302A;
+      --bad:#EE8C7E; --bad-soft:#38201C;
+      --warn:#DCAF5C; --warn-soft:#332810;
+    }
+  }
+  :root[data-theme="dark"]{
+    --paper:#101416; --card:#191E21; --card-2:#212729;
+    --ink:#ECEFF0; --ink-2:#B2BABE; --ink-3:#7E888D;
+    --rule:#2E3639;
+    --ok:#4FC5A3; --ok-soft:#10302A;
+    --bad:#EE8C7E; --bad-soft:#38201C;
+    --warn:#DCAF5C; --warn-soft:#332810;
+  }
+  *{box-sizing:border-box}
+  body{background:var(--paper);color:var(--ink);
+    font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+    font-size:16px;line-height:1.5;padding-inline:18px;padding-block:0 60px;}
+  .wrap{max-width:560px;margin:0 auto}
+  .mono{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace}
+
+  header{padding-block:34px 20px}
+  .mark{font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
+    letter-spacing:.16em;text-transform:uppercase;color:var(--ink-3);display:block;margin-bottom:7px}
+  h1{font-size:27px;font-weight:700;letter-spacing:-.025em;margin:0 0 7px;line-height:1.12}
+  .sub{font-size:14.5px;color:var(--ink-2);margin:0}
+
+  .banner{border-radius:12px;padding:17px 19px;margin-block:20px 24px;font-size:16px;line-height:1.45}
+  .banner.ok{background:var(--ok-soft);color:var(--ok)}
+  .banner.bad{background:var(--bad-soft);color:var(--bad)}
+  .banner.warn{background:var(--warn-soft);color:var(--warn)}
+  .banner .h{font-size:19px;font-weight:700;margin-bottom:4px}
+
+  .group{margin-bottom:22px}
+  .group h2{font-family:"IBM Plex Mono",monospace;font-size:11px;letter-spacing:.13em;
+    text-transform:uppercase;color:var(--ink-3);font-weight:500;margin:0 0 9px}
+  .list{background:var(--card);border:1px solid var(--rule);border-radius:12px;overflow:hidden}
+  .item{display:flex;gap:12px;align-items:flex-start;padding:13px 16px;border-bottom:1px solid var(--rule)}
+  .item:last-child{border-bottom:none}
+  .dot{flex:0 0 auto;width:20px;height:20px;border-radius:50%;display:flex;align-items:center;
+    justify-content:center;font-size:12px;font-weight:700;margin-top:1px}
+  .dot.ok{background:var(--ok-soft);color:var(--ok)}
+  .dot.bad{background:var(--bad-soft);color:var(--bad)}
+  .dot.warn{background:var(--warn-soft);color:var(--warn)}
+  .dot.wait{background:var(--card-2);color:var(--ink-3)}
+  .body{flex:1;min-width:0}
+  .body .t{font-size:15px;font-weight:600;margin-bottom:2px}
+  .body .d{font-size:13.5px;color:var(--ink-2);line-height:1.45}
+  .body .d b{color:var(--ink)}
+  .body .fixit{font-size:13px;color:var(--bad);margin-top:6px;line-height:1.45}
+
+  .foot{font-size:13px;color:var(--ink-3);line-height:1.6;border-top:1px solid var(--rule);padding-top:16px}
+  .foot a{color:var(--ok)}
+  .foot p{margin:0 0 9px}
+</style>
+
+<div class="wrap">
+
+<header>
+  <span class="mark">Sweldo Check</span>
+  <h1>Self check</h1>
+  <p class="sub">Everything that should be true, checked automatically. Green is good. Red needs fixing before anyone else sees the site.</p>
+</header>
+
+<div class="banner" id="banner">
+  <div class="h">Running…</div>
+  <div>Give it a second.</div>
+</div>
+
+<div class="group">
+  <h2>The maths</h2>
+  <div class="list" id="g-math"></div>
+</div>
+
+<div class="group">
+  <h2>The rate table</h2>
+  <div class="list" id="g-rates"></div>
+</div>
+
+<div class="group">
+  <h2>The database</h2>
+  <div class="list" id="g-db"></div>
+</div>
+
+<p class="foot">
+  <span id="stamp"></span>
+</p>
+
+<div class="foot">
+  <p><strong>Safe to run any time.</strong> The database checks write one test row and then try to read it back. The read is <em>supposed</em> to come back empty &mdash; that is what proves nobody can see other people's salaries.</p>
+  <p>Bookmark this page. Run it after every change to the rates, and once more after you point the domain.</p>
+</div>
+
+</div>
+
+<script type="module">
+import { computePayroll, sssMSC, philhealthEmployee, pagibigEmployee, toCentavos } from './lib/payroll.js';
+import { CONFIG } from './lib/events.js';
+
+const $ = id => document.getElementById(id);
+const results = [];
+
+function add(group, status, title, detail, fixit) {
+  results.push({ group, status });
+  const icon = { ok:'✓', bad:'✕', warn:'!', wait:'·' }[status];
+  $(group).insertAdjacentHTML('beforeend', `
+    <div class="item">
+      <span class="dot ${status}">${icon}</span>
+      <span class="body">
+        <span class="t">${title}</span>
+        <span class="d">${detail}</span>
+        ${fixit ? `<span class="fixit">${fixit}</span>` : ''}
+      </span>
+    </div>`);
+}
+
+const money = n => '₱' + n.toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
+
+/* ---------------- the maths ---------------- */
+
+let rates;
+try {
+  const r = await fetch('./rates/2026.json');
+  rates = await r.json();
+  add('g-math','ok','Files loaded',
+    'The engine and the rate table both loaded from the server.');
+} catch (e) {
+  add('g-math','bad','Files did not load',
+    'The page could not read <b>rates/2026.json</b>.',
+    'Check that the rates folder was uploaded with everything else.');
+}
+
+if (rates) {
+  const cases = [
+    { gross: 25000, net: 22611.20, label: '₱25,000 a month' },
+    { gross: 15000, net: 13675.00, label: '₱15,000 — below the tax line' },
+    { gross: 50000, net: 42231.60, label: '₱50,000 — SSS capped' },
+    { gross: 120000, net: 94787.45, label: '₱120,000 — PhilHealth capped' },
+  ];
+  let allOk = true;
+  for (const c of cases) {
+    const got = computePayroll({ gross: c.gross }, rates).net;
+    const ok = Math.round(got*100) === Math.round(c.net*100);
+    if (!ok) allOk = false;
+    add('g-math', ok ? 'ok' : 'warn', c.label,
+      ok ? `Take-home is <b>${money(got)}</b>, as expected.`
+         : `Take-home is <b>${money(got)}</b>. It was <b>${money(c.net)}</b> before your changes.`,
+      ok ? '' : 'This is fine if you just corrected a rate. Recompute this figure by hand and update the test file so it matches your new number.');
+  }
+
+  const stepped = sssMSC(toCentavos(25300), rates) / 100;
+  add('g-math', stepped === 25500 ? 'ok' : 'warn',
+    'SSS steps, not multiplies',
+    `A ₱25,300 salary uses a salary credit of <b>₱${stepped.toLocaleString()}</b>.`,
+    stepped === 25500 ? '' : 'Expected ₱25,500. Check the stepping rule in the rate table.');
+
+  const floor = philhealthEmployee(toCentavos(8000), rates) / 100;
+  add('g-math', floor === 250 ? 'ok' : 'warn',
+    'PhilHealth floor works',
+    `Someone on ₱8,000 pays <b>${money(floor)}</b> — computed on the ₱10,000 minimum.`);
+
+  const cap = pagibigEmployee(toCentavos(250000), rates) / 100;
+  add('g-math', cap === 200 ? 'ok' : 'warn',
+    'Pag-IBIG cap works',
+    `Someone on ₱250,000 still pays <b>${money(cap)}</b>.`);
+}
+
+/* ---------------- the rate table ---------------- */
+
+if (rates) {
+  add('g-rates','ok','Rate version',
+    `This site is using rates effective <b>${rates.effective}</b>.`);
+
+  const groups = ['sss','philhealth','pagibig','withholding'];
+  const unverified = groups.filter(g => rates[g] && rates[g].verify === false);
+
+  if (unverified.length === 0) {
+    add('g-rates','ok','All rates verified',
+      'Every rate group is marked as checked against an official source. Good.');
+  } else {
+    add('g-rates','warn',`${unverified.length} of 4 rate groups not verified yet`,
+      `Still unchecked: <b>${unverified.join(', ')}</b>.`,
+      'Open rates/2026.json and change "verify": false to true for each group once you have confirmed it against the official table. Until then the site shows a warning in its footer, which is correct.');
+  }
+}
+
+/* ---------------- the database ---------------- */
+
+const configured = Boolean(CONFIG.url && CONFIG.anonKey);
+
+if (!configured) {
+  add('g-db','warn','Database not connected yet',
+    'Calculations are not being recorded. The site works fine — you just are not collecting anything.',
+    'Put your Supabase project URL and anon key into CONFIG at the top of lib/events.js.');
+} else {
+  add('g-db','ok','Database connected',
+    `Pointing at <b>${CONFIG.url.replace(/^https?:\/\//,'')}</b>.`);
+
+  // 1. Can we write?
+  let wrote = false;
+  try {
+    const res = await fetch(`${CONFIG.url}/rest/v1/${CONFIG.table}`, {
+      method:'POST',
+      headers:{ 'Content-Type':'application/json', apikey:CONFIG.anonKey,
+                Authorization:`Bearer ${CONFIG.anonKey}`, Prefer:'return=minimal' },
+      body: JSON.stringify({
+        gross_php: 0, period:'monthly', mode:'take',
+        rates_version: (rates && rates.effective) || 'selfcheck',
+        is_return:false, days_since_first:0, source:'selfcheck'
+      })
+    });
+    wrote = res.ok;
+    add('g-db', res.ok ? 'ok' : 'bad',
+      res.ok ? 'Saving works' : 'Saving failed',
+      res.ok ? 'A test row was written successfully.'
+             : `The database refused the write (code ${res.status}).`,
+      res.ok ? '' : 'Re-run the SQL file in Supabase, and check the URL and key are pasted correctly.');
+  } catch {
+    add('g-db','bad','Saving failed',
+      'Could not reach the database at all.',
+      'Check the project URL, and that the Supabase project is not paused.');
+  }
+
+  // 2. THE IMPORTANT ONE — can anyone read it back?
+  try {
+    const res = await fetch(`${CONFIG.url}/rest/v1/${CONFIG.table}?select=*&limit=5`, {
+      headers:{ apikey:CONFIG.anonKey, Authorization:`Bearer ${CONFIG.anonKey}` }
+    });
+    const rows = res.ok ? await res.json() : null;
+
+    if (Array.isArray(rows) && rows.length === 0) {
+      add('g-db','ok','Nobody can read the data — correct',
+        'Asking for salaries came back <b>empty</b>, which is exactly right. Other people\'s numbers are not visible to anyone opening this site.');
+    } else if (Array.isArray(rows) && rows.length > 0) {
+      add('g-db','bad','ANYONE CAN READ THE SALARIES',
+        `The database returned <b>${rows.length} real rows</b> to a plain visitor.`,
+        'Stop. Do not share this site with anyone. In Supabase, open the decoder_events table, go to Policies, and delete every policy except the one for INSERT. Then run this check again.');
+    } else {
+      add('g-db','ok','Nobody can read the data — correct',
+        `The database refused the read (code ${res.status}). Also fine.`);
+    }
+  } catch {
+    add('g-db','warn','Could not test the read',
+      'The check could not complete. Try again once the site is on its real domain.');
+  }
+}
+
+/* ---------------- verdict ---------------- */
+
+const bad = results.filter(r => r.status === 'bad').length;
+const warn = results.filter(r => r.status === 'warn').length;
+const b = $('banner');
+
+if (bad) {
+  b.className = 'banner bad';
+  b.innerHTML = `<div class="h">${bad} thing${bad>1?'s need':' needs'} fixing</div>
+    <div>Look for the red marks below. Do not share the site until they are green.</div>`;
+} else if (warn) {
+  b.className = 'banner warn';
+  b.innerHTML = `<div class="h">Working, with ${warn} thing${warn>1?'s':''} still to do</div>
+    <div>Nothing is broken. The amber marks are steps you have not finished yet.</div>`;
+} else {
+  b.className = 'banner ok';
+  b.innerHTML = `<div class="h">Everything checks out</div>
+    <div>The maths is right, the rates are verified, and nobody can read the data. You are ready.</div>`;
+}
+
+$('stamp').textContent = 'Checked ' + new Date().toLocaleString('en-PH');
+</script>

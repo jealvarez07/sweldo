@@ -1,0 +1,94 @@
+{
+  "effective": "2026-01-01",
+  "expires": null,
+  "currency": "PHP",
+  "notes": "Philippine payroll rates effective 2026-01-01. Every figure below must be checked against the primary source before production use. Fields marked verify:false have NOT been confirmed against an official table.",
+
+  "sss": {
+    "verify": false,
+    "source": "SSS Circular / contribution schedule 2025 onward",
+    "totalRate": 0.15,
+    "employeeRate": 0.05,
+    "employerRate": 0.10,
+    "mscMin": 5000,
+    "mscMax": 35000,
+    "mscStep": 500,
+    "mpfThreshold": 20000,
+    "note": "MSC is a stepped bracket, not a percentage of salary. Salary is mapped to the nearest MSC step. Above mpfThreshold the excess portion is routed to the Mandatory Provident Fund, but the employee's total 5% share is unchanged."
+  },
+
+  "philhealth": {
+    "verify": false,
+    "source": "UHC Act premium schedule 2026",
+    "totalRate": 0.05,
+    "employeeRate": 0.025,
+    "floor": 10000,
+    "ceiling": 100000,
+    "note": "Continuous, not stepped. Premium is computed on basic monthly salary clamped between floor and ceiling."
+  },
+
+  "pagibig": {
+    "verify": false,
+    "source": "HDMF contribution schedule",
+    "lowRate": 0.01,
+    "lowRateCeiling": 1500,
+    "standardRate": 0.02,
+    "employerRate": 0.02,
+    "salaryCap": 10000,
+    "note": "1% for monthly compensation of 1500 or below, 2% above. Compensation is capped at salaryCap, so the employee share maxes at 200."
+  },
+
+  "withholding": {
+    "verify": false,
+    "source": "BIR Revised Withholding Tax Table, TRAIN, 2023 onward",
+    "note": "Period brackets as published by the BIR. These are NOT annual brackets divided by period count -- the BIR publishes rounded boundaries and base amounts, and payroll systems use the published figures. Using annual/12 instead produces centavo-level differences from a real payslip.",
+    "annual": [
+      { "over": 0,       "upTo": 250000,  "base": 0,         "rate": 0.00 },
+      { "over": 250000,  "upTo": 400000,  "base": 0,         "rate": 0.15 },
+      { "over": 400000,  "upTo": 800000,  "base": 22500,     "rate": 0.20 },
+      { "over": 800000,  "upTo": 2000000, "base": 102500,    "rate": 0.25 },
+      { "over": 2000000, "upTo": 8000000, "base": 402500,    "rate": 0.30 },
+      { "over": 8000000, "upTo": null,    "base": 2202500,   "rate": 0.35 }
+    ],
+    "monthly": [
+      { "over": 0,      "upTo": 20833,  "base": 0,         "rate": 0.00 },
+      { "over": 20833,  "upTo": 33333,  "base": 0,         "rate": 0.15 },
+      { "over": 33333,  "upTo": 66667,  "base": 1875.00,   "rate": 0.20 },
+      { "over": 66667,  "upTo": 166667, "base": 8541.80,   "rate": 0.25 },
+      { "over": 166667, "upTo": 666667, "base": 33541.80,  "rate": 0.30 },
+      { "over": 666667, "upTo": null,   "base": 183541.80, "rate": 0.35 }
+    ],
+    "semiMonthly": [
+      { "over": 0,      "upTo": 10417,  "base": 0,        "rate": 0.00 },
+      { "over": 10417,  "upTo": 16667,  "base": 0,        "rate": 0.15 },
+      { "over": 16667,  "upTo": 33333,  "base": 937.50,   "rate": 0.20 },
+      { "over": 33333,  "upTo": 83333,  "base": 4270.70,  "rate": 0.25 },
+      { "over": 83333,  "upTo": 333333, "base": 16770.70, "rate": 0.30 },
+      { "over": 333333, "upTo": null,   "base": 91770.70, "rate": 0.35 }
+    ]
+  },
+
+  "thirteenthMonth": {
+    "verify": false,
+    "exemptCeiling": 90000,
+    "note": "13th month pay plus other benefits are tax-exempt up to this combined annual ceiling."
+  },
+
+  "deMinimis": {
+    "verify": false,
+    "source": "BIR RR 29-2025",
+    "riceSubsidyMonthly": 2500,
+    "uniformAnnual": 8000,
+    "medicalDependentsSemestral": 2000,
+    "medicalAssistanceAnnual": 12000,
+    "laundryMonthly": 400,
+    "giftsAnnual": 6000,
+    "achievementAwardsAnnual": 12000,
+    "monetizedLeaveDays": 12
+  },
+
+  "periodsPerYear": {
+    "monthly": 12,
+    "semiMonthly": 24
+  }
+}
