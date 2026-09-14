@@ -1,5 +1,118 @@
-<title>Sweldo Check</title>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<!doctype html>
+<html lang="en-PH">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+
+<!-- ===================================================================
+     THE SITE ADDRESS LIVES IN SIX PLACES BELOW.
+     When you move to a real domain, find and replace this exact text
+        https://sweldo-iponpal.vercel.app
+     with the new address. Change nothing else.
+     =================================================================== -->
+
+<title>Sweldo Check — Philippine take-home pay calculator 2026 | IponPal</title>
+<meta name="description" content="Enter your monthly gross salary and see your real take-home pay. SSS, PhilHealth, Pag-IBIG and BIR withholding tax explained line by line, in plain English. Free, no sign-up. A tool by IponPal.">
+<link rel="canonical" href="https://sweldo-iponpal.vercel.app/">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="theme-color" content="#F4F2EE" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#101416" media="(prefers-color-scheme: dark)">
+
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="IponPal">
+<meta property="og:locale" content="en_PH">
+<meta property="og:url" content="https://sweldo-iponpal.vercel.app/">
+<meta property="og:title" content="Where did my salary go?">
+<meta property="og:description" content="Type your monthly gross. See every peso that never reaches you — SSS, PhilHealth, Pag-IBIG, tax — and why.">
+<meta property="og:image" content="https://sweldo-iponpal.vercel.app/og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="Sweldo Check by IponPal — a Philippine payslip, decoded.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Where did my salary go?">
+<meta name="twitter:description" content="Type your monthly gross. See every peso that never reaches you — SSS, PhilHealth, Pag-IBIG, tax — and why.">
+<meta name="twitter:image" content="https://sweldo-iponpal.vercel.app/og.png">
+
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="favicon.svg">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Onest:wght@600;700;800&display=swap">
+
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "Organization",
+      "@id": "https://iponpal.com/#org",
+      "name": "IponPal",
+      "url": "https://iponpal.com/",
+      "slogan": "Kaya mo 'yan!"
+    },
+    {
+      "@type": "WebApplication",
+      "@id": "https://sweldo-iponpal.vercel.app/#app",
+      "name": "Sweldo Check",
+      "url": "https://sweldo-iponpal.vercel.app/",
+      "applicationCategory": "FinanceApplication",
+      "operatingSystem": "Any",
+      "browserRequirements": "Requires JavaScript",
+      "inLanguage": "en-PH",
+      "publisher": { "@id": "https://iponpal.com/#org" },
+      "description": "A Philippine take-home pay calculator that explains SSS, PhilHealth, Pag-IBIG and BIR withholding tax line by line.",
+      "featureList": [
+        "Take-home pay from monthly gross",
+        "Reverse: the gross needed for a target take-home",
+        "Compare two job offers",
+        "Plain-English explanation of every deduction"
+      ],
+      "offers": { "@type": "Offer", "price": "0", "priceCurrency": "PHP" },
+      "isAccessibleForFree": true
+    },
+    {
+      "@type": "FAQPage",
+      "@id": "https://sweldo-iponpal.vercel.app/#faq",
+      "mainEntity": [
+        {
+          "@type": "Question",
+          "name": "What is deducted from my salary in the Philippines?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "A private-sector employee normally has four things taken from each pay: the SSS contribution, the PhilHealth premium, the Pag-IBIG contribution, and withholding tax. The first three are fixed by law and depend on your salary bracket. Withholding tax is charged on what is left after the first three."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why is my take-home pay lower than my offer letter?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "An offer letter states gross pay. Take-home pay is gross pay minus the mandatory contributions and withholding tax. The gap is normally a single-digit to low double-digit percentage of gross, and it widens as pay rises because withholding tax is charged in rising brackets."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Do minimum wage earners pay income tax in the Philippines?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "No. A statutory minimum wage earner is exempt from income tax on the basic minimum wage. The SSS, PhilHealth and Pag-IBIG contributions still apply."
+          }
+        },
+        {
+          "@type": "Question",
+          "name": "Why does this calculator differ from my payslip by a few centavos?",
+          "acceptedAnswer": {
+            "@type": "Answer",
+            "text": "Withholding tax can be worked out two ways: from the BIR published table for the pay period, or from annual tax divided by twelve. The two differ by centavos. This tool uses the published period table, because that is what payroll systems use. If your payslip still disagrees, your payslip is the authority."
+          }
+        }
+      ]
+    }
+  ]
+}
+</script>
+
 <style>
   :root{
     --paper:#F4F2EE;
@@ -10,8 +123,9 @@
     --ink-3:#838C91;
     --rule:#DFDCD5;
     --rule-soft:#EBE8E2;
-    --keep:#0B6B54;
+    --keep:#0E8A5F;        /* IponPal green, dark variant */
     --keep-soft:#DDEDE7;
+    --violet:#6847E8;      /* IponPal violet, dark variant */
     --gone:#A93226;
     --gone-soft:#F7E3E0;
     --warn:#8A6212;
@@ -28,8 +142,9 @@
       --ink-3:#7E888D;
       --rule:#2E3639;
       --rule-soft:#242B2E;
-      --keep:#4FC5A3;
+      --keep:#3FCF9A;
       --keep-soft:#10302A;
+      --violet:#A48BFF;
       --gone:#EE8C7E;
       --gone-soft:#38201C;
       --warn:#DCAF5C;
@@ -41,7 +156,7 @@
     --paper:#101416; --card:#191E21; --card-2:#212729;
     --ink:#ECEFF0; --ink-2:#B2BABE; --ink-3:#7E888D;
     --rule:#2E3639; --rule-soft:#242B2E;
-    --keep:#4FC5A3; --keep-soft:#10302A;
+    --keep:#3FCF9A; --keep-soft:#10302A; --violet:#A48BFF;
     --gone:#EE8C7E; --gone-soft:#38201C;
     --warn:#DCAF5C; --warn-soft:#332810;
     --focus:#4FC5A3;
@@ -62,10 +177,22 @@
 
   /* ---------- head ---------- */
   header{padding-block:26px 18px}
-  .brand{display:flex;align-items:baseline;gap:9px;margin-bottom:5px}
+  .brand{display:flex;align-items:baseline;gap:9px;margin-bottom:5px;flex-wrap:wrap}
   .brand .mark{
     font-family:"IBM Plex Mono",monospace;font-size:11px;font-weight:600;
     letter-spacing:.16em;text-transform:uppercase;color:var(--keep);
+  }
+  .brand .by{
+    font-size:11px;color:var(--ink-3);text-decoration:none;
+    display:inline-flex;align-items:baseline;gap:4px;
+  }
+  .brand .by:hover .wordmark{opacity:.8}
+  .wordmark{
+    font-family:"Onest","Archivo",system-ui,sans-serif;
+    font-weight:800;font-size:12.5px;letter-spacing:-.01em;
+    background:linear-gradient(95deg,var(--keep),var(--violet));
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;color:var(--keep);
   }
   h1{font-size:25px;font-weight:700;letter-spacing:-.025em;margin:0 0 5px;line-height:1.15}
   .sub{font-size:14.5px;color:var(--ink-2);margin:0}
@@ -208,15 +335,25 @@
 
   /* ---------- next step ---------- */
   .next{
-    background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--keep);
+    background:var(--card);border:1px solid var(--rule);border-left:3px solid var(--violet);
     border-radius:11px;padding:15px 17px;margin-bottom:22px;
   }
   .next .h{font-size:15px;font-weight:600;margin-bottom:5px}
   .next p{font-size:13.5px;color:var(--ink-2);margin:0 0 11px}
   .next a{
-    display:inline-block;font-size:13.5px;font-weight:600;color:var(--keep);
-    text-decoration:none;border-bottom:1.5px solid var(--keep);padding-bottom:1px;
+    display:inline-block;font-size:13.5px;font-weight:600;color:var(--violet);
+    text-decoration:none;border-bottom:1.5px solid var(--violet);padding-bottom:1px;
   }
+  .next .who{
+    font-family:"Onest","Archivo",system-ui,sans-serif;font-weight:800;
+  }
+
+  /* ---------- IponPal sign-off ---------- */
+  footer .sign{
+    margin-bottom:10px;font-size:12.5px;color:var(--ink-2);
+  }
+  footer .sign .wordmark{font-size:13px}
+  footer .sign a{color:var(--keep);text-decoration:none;font-weight:600}
 
   details.cover{background:var(--card-2);border-radius:10px;padding:12px 15px;margin-bottom:20px}
   details.cover summary{font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink-2);list-style:none}
@@ -243,10 +380,16 @@
   }
 </style>
 
+</head>
+<body>
+
 <div class="wrap">
 
 <header>
-  <div class="brand"><span class="mark">Sweldo Check</span></div>
+  <div class="brand">
+    <span class="mark">Sweldo Check</span>
+    <a class="by" href="https://iponpal.com/?utm_source=sweldo&amp;utm_medium=header" rel="noopener">by <span class="wordmark">IponPal</span></a>
+  </div>
   <h1>Where did my salary go?</h1>
   <p class="sub">Type your monthly gross. See every peso that never reaches you, and why.</p>
 </header>
@@ -294,7 +437,8 @@
 </div>
 
 <div class="acts">
-  <button class="primary" id="copy">Copy summary</button>
+  <button class="primary" id="copy">Copy</button>
+  <button id="share">Share</button>
   <button id="reset">Reset</button>
 </div>
 
@@ -313,6 +457,9 @@
 <footer>
   <p><strong>This is an estimate.</strong> Your employer's payroll system is the authority. If our number and your payslip disagree, your payslip wins — and we would like to know about it.</p>
   <p>Withholding uses the BIR's published period table, not annual tax divided by twelve. That is what payroll systems do, so it is what should match your payslip.</p>
+  <p class="sign">A free tool by
+    <a href="https://iponpal.com/?utm_source=sweldo&amp;utm_medium=footer" rel="noopener"><span class="wordmark">IponPal</span></a>
+    — the budgeting app that helps your pay last until the next payday.</p>
   <p class="ver" id="ver"></p>
 </footer>
 
@@ -414,8 +561,8 @@ function render() {
 
     if (r.net > 0) {
       nextHtml = `<div class="h">₱${money(daily)} a day.</div>
-        <p>That is what you actually have to work with. Want to see whether it lasts to the next payday?</p>
-        <a href="https://app.iponpal.com/?income=${Math.round(r.net)}" rel="noopener">Track it →</a>`;
+        <p>That is what you actually have to work with. <span class="who">IponPal</span> can tell you whether it lasts until the next payday.</p>
+        <a href="https://app.iponpal.com/?income=${Math.round(r.net)}&utm_source=sweldo&utm_medium=result" rel="noopener">Open IponPal with this figure →</a>`;
     }
   }
 
@@ -542,6 +689,26 @@ $('copy').addEventListener('click', async () => {
   try { await navigator.clipboard.writeText(summaryText()); toast('Copied — paste it anywhere'); }
   catch { toast('Could not copy on this device'); }
 });
+/* Share sends the TOOL, never the person's own figures. A salary is shared
+   only by the explicit "Copy summary" action, where the user can see and edit
+   what goes out. A share sheet is one careless tap; a clipboard paste is not. */
+$('share').addEventListener('click', async () => {
+  const url = location.origin + location.pathname;
+  const data = {
+    title: 'Sweldo Check — where did my salary go?',
+    text: 'Type your monthly gross and see every peso that never reaches you. Free, no sign-up.',
+    url,
+  };
+  try {
+    if (navigator.share) { await navigator.share(data); return; }
+    await navigator.clipboard.writeText(url);
+    toast('Link copied — paste it anywhere');
+  } catch (err) {
+    if (err && err.name === 'AbortError') return;   // user closed the sheet
+    try { await navigator.clipboard.writeText(url); toast('Link copied'); }
+    catch { toast('Could not share on this device'); }
+  }
+});
 $('reset').addEventListener('click', () => {
   inA.value = '25,000'; inB.value = '28,000';
   mode='take'; period='monthly'; mwe=false;
@@ -560,3 +727,6 @@ for (const el of [inA, inB]) {
 $('ver').textContent = 'Rates effective ' + rates.effective + ' · not yet verified against primary sources';
 render();
 </script>
+
+</body>
+</html>
