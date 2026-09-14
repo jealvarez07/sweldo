@@ -1,31 +1,34 @@
 /* =============================================================================
    IponPal design system — tokens
    -----------------------------------------------------------------------------
-   One file, two products: iponpal.com / app.iponpal.com (the app) and
-   Sweldo Check (the decoder). Copy this file into each repo unchanged.
-   If a value needs to differ per product, it does not belong here.
+   One file, three surfaces: iponpal.com (landing), app.iponpal.com (the app),
+   and Sweldo Check (the decoder). Copy into each repo unchanged.
+   If a value has to differ per product, it does not belong here.
 
-   Derived from the live landing page CSS, September 2026. Where the landing
-   page had no answer — a dark theme, a figure typeface, loss and warning
-   colours — the value is marked NEW and the reason is given.
+   Reconciled 14 Sep 2026 from BOTH real stylesheets — the landing page and the
+   app. Where the two disagreed, the disagreement is marked and a winner named.
+   Values marked NEW were decided here because no surface had an answer.
    ============================================================================= */
 
 :root {
-  /* --- Brand. Fixed. These identify the company; never theme them. ------- */
+  /* --- Brand. Fixed. Both surfaces already agree on every one of these. --- */
   --brand-green:      #12A472;
-  --brand-green-dk:   #0E8A5F;   /* use on light grounds: passes contrast */
+  --brand-green-dk:   #0E8A5F;   /* legible as text on a light ground */
   --brand-violet:     #7C5CFC;
   --brand-violet-dk:  #6847E8;
   --brand-gold:       #B07C13;
+  --brand-gold-dk:    #8A5F0E;
   --brand-grad:       linear-gradient(90deg, #12A472, #7C5CFC);
   --brand-grad-soft:  linear-gradient(135deg, #7C5CFC, #12A472);
 
-  /* --- Type ------------------------------------------------------------- */
+  /* --- Type --------------------------------------------------------------
+     Both surfaces already set head and body to Onest. --font-money is the
+     one real change this system asks for: the app currently points it at
+     Onest, which cannot align a column of pesos. */
   --font:        'Onest', 'Helvetica Neue', system-ui, sans-serif;
-  --font-figure: 'IBM Plex Mono', ui-monospace, Menlo, monospace;  /* NEW */
-  /* NEW: both products show pesos in columns. A proportional face makes
-     ₱1,250.00 and ₱625.00 fail to line up. Every figure a user compares
-     uses --font-figure with font-variant-numeric: tabular-nums. */
+  --font-head:   var(--font);
+  --font-body:   var(--font);
+  --font-money:  'IBM Plex Mono', ui-monospace, Menlo, monospace;   /* CHANGED */
 
   --t-display: clamp(40px, 8.5vw, 76px);  /* marketing hero only */
   --t-h1:      clamp(25px, 5vw, 44px);
@@ -35,14 +38,12 @@
   --t-xs:      13px;
   --t-micro:   11px;                      /* uppercase labels, .16em tracking */
 
-  --w-regular: 400;
-  --w-medium:  500;
-  --w-semi:    600;
-  --w-bold:    700;
-  --w-black:   800;                       /* wordmark and display only */
+  --w-regular: 400; --w-medium: 500; --w-semi: 600; --w-bold: 700;
+  --w-black:   800;                       /* headings, wordmark */
 
-  /* --- Surface: LIGHT ---------------------------------------------------- */
-  --bg:        #F5F7F4;   /* the landing page ground — slight green cast */
+  /* --- Surface: LIGHT. Both surfaces already agree on bg, text and muted. */
+  --bg:        #F5F7F4;
+  --page-bg:   linear-gradient(165deg, #F5F7F4 0%, #ECF1EC 45%, #F2F3F0 100%);
   --surface:   #FFFFFF;
   --surface-2: #ECF0EA;
   --ink:       #16211A;
@@ -51,91 +52,133 @@
   --line:      #E8ECE6;
   --line-soft: #F0F3EF;
 
-  /* --- Semantic. Separate from brand: these mean something. --------------- */
-  --gain:      #0E8A5F;   /* money kept */
-  --gain-soft: #DDEDE7;
-  --loss:      #A93226;   /* NEW — money gone. The app had no loss colour. */
-  --loss-soft: #F7E3E0;
-  --warn:      #B07C13;   /* the landing page gold, given a job */
-  --warn-soft: #F7EBD4;
-  --focus:     #0E8A5F;
+  /* Glass. The app and landing use this; the tool does not. Kept so a shared
+     component can be lifted between them without re-deriving the values. */
+  --glass:        rgba(255,255,255,0.55);
+  --glass-strong: rgba(255,255,255,0.66);
+  --border-glass: rgba(255,255,255,0.90);
+  --orb-green:    rgba(20,160,110,0.18);
+  --orb-violet:   rgba(124,92,252,0.14);
 
-  /* --- Depth ------------------------------------------------------------- */
-  --sh-sm: 0 1px 2px rgba(22, 33, 26, .07);          /* NEW — app-scale lift */
-  --sh:    0 18px 50px rgba(14, 138, 95, .12);
-  --sh-lg: 0 30px 80px rgba(22, 33, 26, .18);
+  /* --- Semantic: money ---------------------------------------------------- */
+  --gain:      #0E8A5F;                    /* money kept */
+  --gain-soft: rgba(14,138,95,0.10);
+  --loss:      #C4485E;                    /* money gone — the app's --danger */
+  --loss-soft: rgba(196,72,94,0.10);
+  --warn:      #B07C13;
+  --warn-soft: rgba(176,124,19,0.12);
+  --focus:     #7C5CFC;                    /* the app focuses inputs in violet */
 
-  /* --- Radius. Small end for tools, large end for marketing. ------------- */
-  --r-xs:   8px;
-  --r-sm:   11px;
-  --r-md:   16px;    /* buttons and cards */
-  --r-lg:   20px;
-  --r-xl:   26px;
+  /* --- Semantic: the 50-30-20 triad. The app's, and it is good. ----------- */
+  --needs:   #12A472;
+  --wants:   #B07C13;
+  --savings: #7C5CFC;
+
+  /* --- Depth. Renamed from the app's sh-sm/md/lg, which all described large
+         soft shadows and left no name for a hairline lift. ------------------ */
+  --sh-hair:   0 1px 2px rgba(22,33,26,.07);          /* NEW — tool-scale */
+  --sh-card:   0 8px 24px rgba(22,33,26,.08);         /* was --sh-sm */
+  --sh-float:  0 14px 36px rgba(14,138,95,.10);       /* was --sh-md */
+  --sh-violet: 0 12px 30px rgba(124,92,252,.16);      /* was --sh-lg */
+
+  /* --- Radius. The app uses a single 22px; the landing 16–42; the tool 8–16.
+         One scale, and each product sits in the part of it that fits. ------- */
+  --r-xs: 8px; --r-sm: 12px; --r-md: 16px; --r-app: 22px; --r-lg: 26px;
   --r-pill: 999px;
 
-  /* --- Space ------------------------------------------------------------- */
+  /* --- Space -------------------------------------------------------------- */
   --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
   --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 72px;
 
-  /* --- Measure ----------------------------------------------------------- */
-  --w-tool:    460px;   /* one thumb, one column — Sweldo, the app */
-  --w-page:   1080px;   /* marketing — the landing page */
+  /* --- Measure ------------------------------------------------------------ */
+  --w-app:   430px;    /* the app */
+  --w-tool:  460px;    /* Sweldo */
+  --w-page: 1080px;    /* the landing page */
 }
 
 /* =============================================================================
-   Surface: DARK.  NEW — the landing page is light only.
-   Not an inversion. The same green cast, carried into the dark, so the brand
-   green stays recognisably itself instead of turning grey-teal.
-   Three states: system dark, explicit dark, explicit light wins over OS dark.
+   Surface: DARK.
+   Taken from the app's real dark theme, which the landing page does not have.
+   Two changes, both marked: a lighter green and a lighter red, because the app
+   reuses its light-ground accents on a dark ground where they sit too low.
+   Three states, so a system-dark visitor is served without touching a toggle —
+   the app today only answers to an explicit data-theme stamp.
    ============================================================================= */
 
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) {
-    --bg:        #0F1512;
+    --bg:        #0F1613;
+    --page-bg:   linear-gradient(165deg, #0F1613 0%, #111A15 45%, #0E1512 100%);
     --surface:   #171E1A;
     --surface-2: #1F2723;
-    --ink:       #ECF1ED;
+    --ink:       #E8ECE6;
     --ink-2:     #B4BEB7;
-    --ink-3:     #7D8A82;
-    --line:      #2C3631;
-    --line-soft: #222B27;
+    --ink-3:     #9AA394;
+    --line:      rgba(255,255,255,0.12);
+    --line-soft: rgba(255,255,255,0.07);
 
-    --gain:      #3FCF9A;
-    --gain-soft: #10302A;
-    --loss:      #EE8C7E;
-    --loss-soft: #38201C;
-    --warn:      #DCAF5C;
-    --warn-soft: #332810;
-    --focus:     #3FCF9A;
+    --glass:        rgba(23,33,26,0.55);
+    --glass-strong: rgba(23,33,26,0.66);
+    --border-glass: rgba(255,255,255,0.12);
+    --orb-green:    rgba(20,160,110,0.14);
+    --orb-violet:   rgba(124,92,252,0.12);
 
-    --brand-green-dk:  #3FCF9A;   /* the light-ground variant flips */
+    --gain:      #3FCF9A;               /* NEW — see note below */
+    --gain-soft: rgba(18,164,114,0.16);
+    --loss:      #E8808F;               /* NEW — #C4485E is too dark here */
+    --loss-soft: rgba(196,72,94,0.16);
+    --warn:      #EAC77A;               /* the app's --plus-ink */
+    --warn-soft: rgba(176,124,19,0.18);
+    --focus:     #A48BFF;
+
+    --brand-green-dk:  #3FCF9A;
     --brand-violet-dk: #A48BFF;
 
-    --sh-sm: 0 1px 2px rgba(0, 0, 0, .4);
-    --sh:    0 18px 50px rgba(0, 0, 0, .45);
-    --sh-lg: 0 30px 80px rgba(0, 0, 0, .55);
+    --sh-hair:   0 1px 2px rgba(0,0,0,.40);
+    --sh-card:   0 8px 24px rgba(0,0,0,.40);
+    --sh-float:  0 14px 36px rgba(0,0,0,.40);
+    --sh-violet: 0 12px 30px rgba(124,92,252,.28);
   }
 }
 
-:root[data-theme="dark"] {
-  --bg:#0F1512; --surface:#171E1A; --surface-2:#1F2723;
-  --ink:#ECF1ED; --ink-2:#B4BEB7; --ink-3:#7D8A82;
-  --line:#2C3631; --line-soft:#222B27;
-  --gain:#3FCF9A; --gain-soft:#10302A;
-  --loss:#EE8C7E; --loss-soft:#38201C;
-  --warn:#DCAF5C; --warn-soft:#332810;
-  --focus:#3FCF9A;
+/* NOTE on the dark green. The app carries TWO dark-mode greens: --primary stays
+   #12A472, while --install-ink lightens to #7ED4B4. Neither is used for a large
+   figure. #3FCF9A sits between them and holds contrast on #0F1613 at display
+   size. When the app adopts this file, both of its greens collapse into this
+   one — that is the intended cleanup, not a side effect. */
+
+:root[data-theme="dark"], html[data-theme="dark"] {
+  --bg:#0F1613;
+  --page-bg:linear-gradient(165deg,#0F1613 0%,#111A15 45%,#0E1512 100%);
+  --surface:#171E1A; --surface-2:#1F2723;
+  --ink:#E8ECE6; --ink-2:#B4BEB7; --ink-3:#9AA394;
+  --line:rgba(255,255,255,0.12); --line-soft:rgba(255,255,255,0.07);
+  --glass:rgba(23,33,26,0.55); --glass-strong:rgba(23,33,26,0.66);
+  --border-glass:rgba(255,255,255,0.12);
+  --orb-green:rgba(20,160,110,0.14); --orb-violet:rgba(124,92,252,0.12);
+  --gain:#3FCF9A; --gain-soft:rgba(18,164,114,0.16);
+  --loss:#E8808F; --loss-soft:rgba(196,72,94,0.16);
+  --warn:#EAC77A; --warn-soft:rgba(176,124,19,0.18);
+  --focus:#A48BFF;
   --brand-green-dk:#3FCF9A; --brand-violet-dk:#A48BFF;
-  --sh-sm:0 1px 2px rgba(0,0,0,.4);
-  --sh:0 18px 50px rgba(0,0,0,.45);
-  --sh-lg:0 30px 80px rgba(0,0,0,.55);
+  --sh-hair:0 1px 2px rgba(0,0,0,.40);
+  --sh-card:0 8px 24px rgba(0,0,0,.40);
+  --sh-float:0 14px 36px rgba(0,0,0,.40);
+  --sh-violet:0 12px 30px rgba(124,92,252,.28);
+}
+
+/* The app's own fallback, kept: solid surfaces where backdrop-filter is absent. */
+@supports not (backdrop-filter: blur(1px)) {
+  :root { --glass:rgba(255,255,255,0.90); --glass-strong:rgba(255,255,255,0.94) }
+  :root[data-theme="dark"], html[data-theme="dark"] {
+    --glass:rgba(23,33,26,0.90); --glass-strong:rgba(23,33,26,0.94)
+  }
 }
 
 /* =============================================================================
-   The two things that must look identical in both products
+   The two objects that must be identical everywhere
    ============================================================================= */
 
-/* The wordmark. Same face, same weight, same gradient, everywhere. */
 .wordmark {
   font-family: var(--font);
   font-weight: var(--w-black);
@@ -147,8 +190,20 @@
   color: var(--brand-green-dk);   /* fallback where background-clip fails */
 }
 
-/* Any peso figure a user compares against another peso figure. */
 .figure {
-  font-family: var(--font-figure);
+  font-family: var(--font-money);
   font-variant-numeric: tabular-nums;
 }
+
+/* =============================================================================
+   KNOWN DEBT — fix in the app when convenient
+   -----------------------------------------------------------------------------
+   1. manifest.json says theme_color #F6F5FB (violet-white). The app's own --bg
+      is #F5F7F4 (green-white). The splash screen and Android status bar are
+      therefore the wrong colour. One-line fix in manifest.json.
+   2. --blue is defined as #12A472 and --blue-soft as the green soft. There is
+      no blue. Delete both and use --primary at the call sites.
+   3. --pink and --danger hold the same value. Keep --danger, drop --pink.
+   4. The app answers only to html[data-theme="dark"]. A visitor whose phone is
+      in dark mode sees the light theme until they find the toggle.
+   ============================================================================= */

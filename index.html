@@ -16,7 +16,7 @@
 <link rel="canonical" href="https://sweldo-iponpal.vercel.app/">
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta name="theme-color" content="#F5F7F4" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#0F1512" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#0F1613" media="(prefers-color-scheme: dark)">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="IponPal">
@@ -129,42 +129,42 @@
     --rule:#E8ECE6;        /* system --line */
     --rule-soft:#F0F3EF;
     --keep:#0E8A5F;        /* system --gain  (IponPal green) */
-    --keep-soft:#DDEDE7;
+    --keep-soft:rgba(14,138,95,0.10);
     --violet:#6847E8;      /* IponPal violet */
-    --gone:#A93226;        /* system --loss */
-    --gone-soft:#F7E3E0;
+    --gone:#C4485E;        /* system --loss — the app's --danger */
+    --gone-soft:rgba(196,72,94,0.10);
     --warn:#B07C13;        /* system --warn  (IponPal gold) */
-    --warn-soft:#F7EBD4;
-    --focus:#0E8A5F;
+    --warn-soft:rgba(176,124,19,0.12);
+    --focus:#7C5CFC;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --paper:#0F1512;
+      --paper:#0F1613;
       --card:#171E1A;
       --card-2:#1F2723;
-      --ink:#ECF1ED;
+      --ink:#E8ECE6;
       --ink-2:#B4BEB7;
-      --ink-3:#7D8A82;
-      --rule:#2C3631;
-      --rule-soft:#222B27;
+      --ink-3:#9AA394;
+      --rule:rgba(255,255,255,0.12);
+      --rule-soft:rgba(255,255,255,0.07);
       --keep:#3FCF9A;
-      --keep-soft:#10302A;
+      --keep-soft:rgba(18,164,114,0.16);
       --violet:#A48BFF;
-      --gone:#EE8C7E;
-      --gone-soft:#38201C;
-      --warn:#DCAF5C;
-      --warn-soft:#332810;
-      --focus:#3FCF9A;
+      --gone:#E8808F;
+      --gone-soft:rgba(196,72,94,0.16);
+      --warn:#EAC77A;
+      --warn-soft:rgba(176,124,19,0.18);
+      --focus:#A48BFF;
     }
   }
   :root[data-theme="dark"]{
-    --paper:#0F1512; --card:#171E1A; --card-2:#1F2723;
-    --ink:#ECF1ED; --ink-2:#B4BEB7; --ink-3:#7D8A82;
-    --rule:#2C3631; --rule-soft:#222B27;
-    --keep:#3FCF9A; --keep-soft:#10302A; --violet:#A48BFF;
-    --gone:#EE8C7E; --gone-soft:#38201C;
-    --warn:#DCAF5C; --warn-soft:#332810;
-    --focus:#3FCF9A;
+    --paper:#0F1613; --card:#171E1A; --card-2:#1F2723;
+    --ink:#E8ECE6; --ink-2:#B4BEB7; --ink-3:#9AA394;
+    --rule:rgba(255,255,255,0.12); --rule-soft:rgba(255,255,255,0.07);
+    --keep:#3FCF9A; --keep-soft:rgba(18,164,114,0.16); --violet:#A48BFF;
+    --gone:#E8808F; --gone-soft:rgba(196,72,94,0.16);
+    --warn:#EAC77A; --warn-soft:rgba(176,124,19,0.18);
+    --focus:#A48BFF;
   }
 
   *{box-sizing:border-box}
