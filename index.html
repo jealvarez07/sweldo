@@ -15,8 +15,8 @@
 <meta name="description" content="Enter your monthly gross salary and see your real take-home pay. SSS, PhilHealth, Pag-IBIG and BIR withholding tax explained line by line, in plain English. Free, no sign-up. A tool by IponPal.">
 <link rel="canonical" href="https://sweldo-iponpal.vercel.app/">
 <meta name="robots" content="index,follow,max-image-preview:large">
-<meta name="theme-color" content="#F4F2EE" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#101416" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#F5F7F4" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1512" media="(prefers-color-scheme: dark)">
 
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="IponPal">
@@ -38,7 +38,7 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Onest:wght@600;700;800&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=Onest:wght@400;500;600;700;800&display=swap">
 
 <script type="application/ld+json">
 {
@@ -114,34 +114,39 @@
 </script>
 
 <style>
+  /* ---------------------------------------------------------------------
+     IponPal design system — see tokens.css. Values are inlined here so the
+     page needs no second stylesheet request. If you change a colour, change
+     it in tokens.css too, or the two products drift apart.
+     --------------------------------------------------------------------- */
   :root{
-    --paper:#F4F2EE;
-    --card:#FFFFFF;
-    --card-2:#F0EEE9;
-    --ink:#14181A;
-    --ink-2:#4A5257;
-    --ink-3:#838C91;
-    --rule:#DFDCD5;
-    --rule-soft:#EBE8E2;
-    --keep:#0E8A5F;        /* IponPal green, dark variant */
+    --paper:#F5F7F4;       /* system --bg */
+    --card:#FFFFFF;        /* system --surface */
+    --card-2:#ECF0EA;      /* system --surface-2 */
+    --ink:#16211A;
+    --ink-2:#2A3230;
+    --ink-3:#68705F;
+    --rule:#E8ECE6;        /* system --line */
+    --rule-soft:#F0F3EF;
+    --keep:#0E8A5F;        /* system --gain  (IponPal green) */
     --keep-soft:#DDEDE7;
-    --violet:#6847E8;      /* IponPal violet, dark variant */
-    --gone:#A93226;
+    --violet:#6847E8;      /* IponPal violet */
+    --gone:#A93226;        /* system --loss */
     --gone-soft:#F7E3E0;
-    --warn:#8A6212;
+    --warn:#B07C13;        /* system --warn  (IponPal gold) */
     --warn-soft:#F7EBD4;
-    --focus:#0B6B54;
+    --focus:#0E8A5F;
   }
   @media (prefers-color-scheme: dark){
     :root:not([data-theme="light"]){
-      --paper:#101416;
-      --card:#191E21;
-      --card-2:#212729;
-      --ink:#ECEFF0;
-      --ink-2:#B2BABE;
-      --ink-3:#7E888D;
-      --rule:#2E3639;
-      --rule-soft:#242B2E;
+      --paper:#0F1512;
+      --card:#171E1A;
+      --card-2:#1F2723;
+      --ink:#ECF1ED;
+      --ink-2:#B4BEB7;
+      --ink-3:#7D8A82;
+      --rule:#2C3631;
+      --rule-soft:#222B27;
       --keep:#3FCF9A;
       --keep-soft:#10302A;
       --violet:#A48BFF;
@@ -149,24 +154,24 @@
       --gone-soft:#38201C;
       --warn:#DCAF5C;
       --warn-soft:#332810;
-      --focus:#4FC5A3;
+      --focus:#3FCF9A;
     }
   }
   :root[data-theme="dark"]{
-    --paper:#101416; --card:#191E21; --card-2:#212729;
-    --ink:#ECEFF0; --ink-2:#B2BABE; --ink-3:#7E888D;
-    --rule:#2E3639; --rule-soft:#242B2E;
+    --paper:#0F1512; --card:#171E1A; --card-2:#1F2723;
+    --ink:#ECF1ED; --ink-2:#B4BEB7; --ink-3:#7D8A82;
+    --rule:#2C3631; --rule-soft:#222B27;
     --keep:#3FCF9A; --keep-soft:#10302A; --violet:#A48BFF;
     --gone:#EE8C7E; --gone-soft:#38201C;
     --warn:#DCAF5C; --warn-soft:#332810;
-    --focus:#4FC5A3;
+    --focus:#3FCF9A;
   }
 
   *{box-sizing:border-box}
   html{-webkit-text-size-adjust:100%}
   body{
     background:var(--paper); color:var(--ink);
-    font-family:"Archivo","Helvetica Neue",Arial,sans-serif;
+    font-family:"Onest","Helvetica Neue",system-ui,sans-serif;
     font-size:16px; line-height:1.5;
     padding-inline:18px; padding-block:0 56px;
     -webkit-tap-highlight-color:transparent;
@@ -188,7 +193,7 @@
   }
   .brand .by:hover .wordmark{opacity:.8}
   .wordmark{
-    font-family:"Onest","Archivo",system-ui,sans-serif;
+    font-family:"Onest","Helvetica Neue",system-ui,sans-serif;
     font-weight:800;font-size:12.5px;letter-spacing:-.01em;
     background:linear-gradient(95deg,var(--keep),var(--violet));
     -webkit-background-clip:text;background-clip:text;
@@ -345,7 +350,7 @@
     text-decoration:none;border-bottom:1.5px solid var(--violet);padding-bottom:1px;
   }
   .next .who{
-    font-family:"Onest","Archivo",system-ui,sans-serif;font-weight:800;
+    font-family:"Onest","Helvetica Neue",system-ui,sans-serif;font-weight:800;
   }
 
   /* ---------- IponPal sign-off ---------- */

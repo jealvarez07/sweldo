@@ -1,0 +1,154 @@
+/* =============================================================================
+   IponPal design system — tokens
+   -----------------------------------------------------------------------------
+   One file, two products: iponpal.com / app.iponpal.com (the app) and
+   Sweldo Check (the decoder). Copy this file into each repo unchanged.
+   If a value needs to differ per product, it does not belong here.
+
+   Derived from the live landing page CSS, September 2026. Where the landing
+   page had no answer — a dark theme, a figure typeface, loss and warning
+   colours — the value is marked NEW and the reason is given.
+   ============================================================================= */
+
+:root {
+  /* --- Brand. Fixed. These identify the company; never theme them. ------- */
+  --brand-green:      #12A472;
+  --brand-green-dk:   #0E8A5F;   /* use on light grounds: passes contrast */
+  --brand-violet:     #7C5CFC;
+  --brand-violet-dk:  #6847E8;
+  --brand-gold:       #B07C13;
+  --brand-grad:       linear-gradient(90deg, #12A472, #7C5CFC);
+  --brand-grad-soft:  linear-gradient(135deg, #7C5CFC, #12A472);
+
+  /* --- Type ------------------------------------------------------------- */
+  --font:        'Onest', 'Helvetica Neue', system-ui, sans-serif;
+  --font-figure: 'IBM Plex Mono', ui-monospace, Menlo, monospace;  /* NEW */
+  /* NEW: both products show pesos in columns. A proportional face makes
+     ₱1,250.00 and ₱625.00 fail to line up. Every figure a user compares
+     uses --font-figure with font-variant-numeric: tabular-nums. */
+
+  --t-display: clamp(40px, 8.5vw, 76px);  /* marketing hero only */
+  --t-h1:      clamp(25px, 5vw, 44px);
+  --t-h2:      19px;
+  --t-body:    16px;
+  --t-sm:      14.5px;
+  --t-xs:      13px;
+  --t-micro:   11px;                      /* uppercase labels, .16em tracking */
+
+  --w-regular: 400;
+  --w-medium:  500;
+  --w-semi:    600;
+  --w-bold:    700;
+  --w-black:   800;                       /* wordmark and display only */
+
+  /* --- Surface: LIGHT ---------------------------------------------------- */
+  --bg:        #F5F7F4;   /* the landing page ground — slight green cast */
+  --surface:   #FFFFFF;
+  --surface-2: #ECF0EA;
+  --ink:       #16211A;
+  --ink-2:     #2A3230;
+  --ink-3:     #68705F;
+  --line:      #E8ECE6;
+  --line-soft: #F0F3EF;
+
+  /* --- Semantic. Separate from brand: these mean something. --------------- */
+  --gain:      #0E8A5F;   /* money kept */
+  --gain-soft: #DDEDE7;
+  --loss:      #A93226;   /* NEW — money gone. The app had no loss colour. */
+  --loss-soft: #F7E3E0;
+  --warn:      #B07C13;   /* the landing page gold, given a job */
+  --warn-soft: #F7EBD4;
+  --focus:     #0E8A5F;
+
+  /* --- Depth ------------------------------------------------------------- */
+  --sh-sm: 0 1px 2px rgba(22, 33, 26, .07);          /* NEW — app-scale lift */
+  --sh:    0 18px 50px rgba(14, 138, 95, .12);
+  --sh-lg: 0 30px 80px rgba(22, 33, 26, .18);
+
+  /* --- Radius. Small end for tools, large end for marketing. ------------- */
+  --r-xs:   8px;
+  --r-sm:   11px;
+  --r-md:   16px;    /* buttons and cards */
+  --r-lg:   20px;
+  --r-xl:   26px;
+  --r-pill: 999px;
+
+  /* --- Space ------------------------------------------------------------- */
+  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px;
+  --s-5: 24px; --s-6: 32px; --s-7: 48px; --s-8: 72px;
+
+  /* --- Measure ----------------------------------------------------------- */
+  --w-tool:    460px;   /* one thumb, one column — Sweldo, the app */
+  --w-page:   1080px;   /* marketing — the landing page */
+}
+
+/* =============================================================================
+   Surface: DARK.  NEW — the landing page is light only.
+   Not an inversion. The same green cast, carried into the dark, so the brand
+   green stays recognisably itself instead of turning grey-teal.
+   Three states: system dark, explicit dark, explicit light wins over OS dark.
+   ============================================================================= */
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg:        #0F1512;
+    --surface:   #171E1A;
+    --surface-2: #1F2723;
+    --ink:       #ECF1ED;
+    --ink-2:     #B4BEB7;
+    --ink-3:     #7D8A82;
+    --line:      #2C3631;
+    --line-soft: #222B27;
+
+    --gain:      #3FCF9A;
+    --gain-soft: #10302A;
+    --loss:      #EE8C7E;
+    --loss-soft: #38201C;
+    --warn:      #DCAF5C;
+    --warn-soft: #332810;
+    --focus:     #3FCF9A;
+
+    --brand-green-dk:  #3FCF9A;   /* the light-ground variant flips */
+    --brand-violet-dk: #A48BFF;
+
+    --sh-sm: 0 1px 2px rgba(0, 0, 0, .4);
+    --sh:    0 18px 50px rgba(0, 0, 0, .45);
+    --sh-lg: 0 30px 80px rgba(0, 0, 0, .55);
+  }
+}
+
+:root[data-theme="dark"] {
+  --bg:#0F1512; --surface:#171E1A; --surface-2:#1F2723;
+  --ink:#ECF1ED; --ink-2:#B4BEB7; --ink-3:#7D8A82;
+  --line:#2C3631; --line-soft:#222B27;
+  --gain:#3FCF9A; --gain-soft:#10302A;
+  --loss:#EE8C7E; --loss-soft:#38201C;
+  --warn:#DCAF5C; --warn-soft:#332810;
+  --focus:#3FCF9A;
+  --brand-green-dk:#3FCF9A; --brand-violet-dk:#A48BFF;
+  --sh-sm:0 1px 2px rgba(0,0,0,.4);
+  --sh:0 18px 50px rgba(0,0,0,.45);
+  --sh-lg:0 30px 80px rgba(0,0,0,.55);
+}
+
+/* =============================================================================
+   The two things that must look identical in both products
+   ============================================================================= */
+
+/* The wordmark. Same face, same weight, same gradient, everywhere. */
+.wordmark {
+  font-family: var(--font);
+  font-weight: var(--w-black);
+  letter-spacing: -.01em;
+  background: var(--brand-grad);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: var(--brand-green-dk);   /* fallback where background-clip fails */
+}
+
+/* Any peso figure a user compares against another peso figure. */
+.figure {
+  font-family: var(--font-figure);
+  font-variant-numeric: tabular-nums;
+}
