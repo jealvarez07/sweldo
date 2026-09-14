@@ -181,6 +181,32 @@ if (rates) {
   add('g-math', cap === 200 ? 'ok' : 'warn',
     'Pag-IBIG cap works',
     `Someone on ₱250,000 still pays <b>${money(cap)}</b>.`);
+
+  // Allowances: the two kinds must not behave the same way.
+  const plain   = computePayroll({ basic: 25000 }, rates);
+  const freeAl  = computePayroll({ basic: 25000, nonTaxableAllowance: 3000 }, rates);
+  const taxedAl = computePayroll({ basic: 25000, taxableAllowance: 3000 }, rates);
+
+  const freeOk = Math.round(freeAl.net*100) === Math.round((plain.net + 3000)*100);
+  add('g-math', freeOk ? 'ok' : 'bad',
+    'Non-taxable allowance lands whole',
+    freeOk ? `₱3,000 tax-free raises take-home by exactly <b>₱3,000.00</b>.`
+           : `₱3,000 tax-free changed take-home by <b>${money(freeAl.net - plain.net)}</b>. It should be ₱3,000.00.`,
+    freeOk ? '' : 'A non-taxable allowance must not touch tax or contributions.');
+
+  const taxedOk = taxedAl.net > plain.net && taxedAl.net < freeAl.net;
+  add('g-math', taxedOk ? 'ok' : 'bad',
+    'Taxed allowance is worth less than tax-free',
+    taxedOk ? `₱3,000 taxed adds <b>${money(taxedAl.net - plain.net)}</b>; the same amount tax-free adds <b>₱3,000.00</b>.`
+            : 'The two allowance types are behaving the same way.',
+    taxedOk ? '' : 'Check that the taxable allowance is being added to taxable income.');
+
+  const baseOk = Math.round(taxedAl.contributions.total*100) === Math.round(plain.contributions.total*100);
+  add('g-math', baseOk ? 'ok' : 'warn',
+    'Contributions are on basic pay',
+    baseOk ? 'An allowance does not change SSS, PhilHealth or Pag-IBIG.'
+           : 'An allowance changed the contributions — that means the base is wider than basic pay.',
+    baseOk ? '' : 'That is a valid setup for some employers, but it is not the default this page claims.');
 }
 
 /* ---------------- the rate table ---------------- */

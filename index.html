@@ -360,6 +360,37 @@
   footer .sign .wordmark{font-size:13px}
   footer .sign a{color:var(--keep);text-decoration:none;font-weight:600}
 
+  /* ---------- allowances, folded away until asked for ---------- */
+  details.allow{margin-bottom:14px}
+  details.allow summary{
+    font-size:13.5px;font-weight:600;color:var(--keep);cursor:pointer;
+    list-style:none;padding:7px 0;display:inline-flex;align-items:center;gap:6px;
+  }
+  details.allow summary::-webkit-details-marker{display:none}
+  details.allow summary::after{content:"+";font-family:"IBM Plex Mono",monospace;color:var(--ink-3)}
+  details.allow[open] summary::after{content:"−"}
+  details.allow summary:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:4px}
+  .allow-body{
+    background:var(--card-2);border-radius:11px;padding:4px 15px 15px;margin-top:2px;
+  }
+  .allow-why{font-size:13px;color:var(--ink-2);margin:11px 0 4px;line-height:1.45}
+  .hint{font-size:12px;color:var(--ink-3);margin:6px 0 0;line-height:1.45}
+
+  /* ---------- what you were paid ---------- */
+  .paid{
+    background:var(--card);border:1px solid var(--rule);border-radius:11px;
+    padding:12px 15px;margin-bottom:12px;
+  }
+  .paid .cap{
+    font-family:"IBM Plex Mono",monospace;font-size:10.5px;letter-spacing:.14em;
+    text-transform:uppercase;color:var(--ink-3);margin-bottom:8px;
+  }
+  .paid .pline{display:flex;justify-content:space-between;gap:12px;font-size:14px;padding-block:4px}
+  .paid .pline + .pline{border-top:1px solid var(--rule-soft)}
+  .paid .pline .v{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  .paid .pline.tot{border-top:1px solid var(--rule);margin-top:4px;padding-top:8px;font-weight:600}
+  .paid .pline small{display:block;font-size:11.5px;color:var(--ink-3);font-weight:400}
+
   details.cover{background:var(--card-2);border-radius:10px;padding:12px 15px;margin-bottom:20px}
   details.cover summary{font-size:13.5px;font-weight:600;cursor:pointer;color:var(--ink-2);list-style:none}
   details.cover summary::-webkit-details-marker{display:none}
@@ -425,6 +456,33 @@
     </div>
   </div>
 
+  <details class="allow" id="allow">
+    <summary>I also get allowances</summary>
+    <div class="allow-body">
+      <p class="allow-why">Allowances change your take-home, and two of the same size are not worth the same. A non-taxable one lands whole. A taxable one is taxed like salary.</p>
+
+      <div class="field">
+        <label for="at">Allowance that is taxed</label>
+        <div class="inp">
+          <span class="peso">₱</span>
+          <input id="at" type="text" inputmode="decimal" enterkeyhint="done"
+                 autocomplete="off" value="" placeholder="0" aria-describedby="at-h">
+        </div>
+        <p class="hint" id="at-h">A fixed cash allowance you do not liquidate — transport or communication, paid whether you spend it or not.</p>
+      </div>
+
+      <div class="field">
+        <label for="an">Allowance that is not taxed</label>
+        <div class="inp">
+          <span class="peso">₱</span>
+          <input id="an" type="text" inputmode="decimal" enterkeyhint="done"
+                 autocomplete="off" value="" placeholder="0" aria-describedby="an-h">
+        </div>
+        <p class="hint" id="an-h">De minimis benefits — rice subsidy, uniform, laundry, medical cash allowance — up to the ceiling set for each. Above a ceiling, the excess is taxed.</p>
+      </div>
+    </div>
+  </details>
+
   <div class="segs" role="group" aria-label="Pay frequency">
     <button id="p-m" aria-pressed="true">Monthly</button>
     <button id="p-s" aria-pressed="false">Semi-monthly</button>
@@ -455,7 +513,7 @@
     <li>Government employees — GSIS works differently from SSS, and guessing would be worse than not answering.</li>
     <li>Contractual and talent-fee workers — expanded withholding tax instead of contributions.</li>
     <li>Daily and weekly pay.</li>
-    <li>Allowances are not yet separated from basic pay.</li>
+    <li>The ₱90,000 yearly limit on 13th month pay and other benefits. If an allowance goes over its de minimis ceiling, the excess is taxable and counts against that limit — this page does not track it across the year.</li>
   </ul>
 </details>
 
@@ -488,11 +546,21 @@ try {
 
 const $ = id => document.getElementById(id);
 const out = $('out'), inA = $('a'), inB = $('b'), fldB = $('fld-b');
+const inAT = $('at'), inAN = $('an'), allowBox = $('allow');
 let mode = 'take', period = 'monthly', mwe = false;
 
 const money = n => n.toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
 const parse = s => { const n = parseFloat(String(s).replace(/[^0-9.]/g,'')); return Number.isFinite(n) ? n : 0; };
 const fmtIn = s => { const n = parse(s); return n ? n.toLocaleString('en-PH',{maximumFractionDigits:2}) : ''; };
+
+/* The main field is "gross pay" only while it is the whole story. Once the
+   allowances are broken out it is basic pay, and calling it gross would be a
+   lie that quietly changes every number below it. */
+function mainLabel() {
+  const split = allowBox.open;
+  if (split) return period === 'monthly' ? 'Monthly basic pay' : 'Basic pay per payday';
+  return period === 'monthly' ? 'Monthly gross pay' : 'Gross pay per payday';
+}
 
 const WHY = {
   sss: 'Five per cent of your salary credit — a stepped bracket, not a flat percentage of your pay. It buys sickness, maternity, disability and retirement benefits. You need 120 monthly contributions, so ten years, before a pension is on the table.',
@@ -500,6 +568,22 @@ const WHY = {
   pagibig: 'Two per cent — but it stops at ₱200 a month no matter how much you earn, which is why a ₱200,000 earner pays the same as you. It is what makes you eligible for a housing loan, and the savings are withdrawable after twenty years.',
   tax: 'Only the amount above ₱20,833 a month is taxed, and only after your contributions come off. The first ₱250,000 you earn in a year is free. Your first job usually pays very little of this.',
 };
+
+/* A block that only appears when there is something to say: how the pay was
+   made up. Without allowances it would repeat the gross figure and earn
+   nothing, so it stays hidden. */
+function paidBlock(r) {
+  if (!(r.taxableAllowance > 0 || r.nonTaxableAllowance > 0)) return '';
+  const line = (l, sub, v) =>
+    `<div class="pline"><span>${l}${sub ? `<small>${sub}</small>` : ''}</span><span class="v">₱${money(v)}</span></div>`;
+  return `<div class="paid">
+    <div class="cap">What you were paid</div>
+    ${line('Basic pay', '', r.basic)}
+    ${r.taxableAllowance > 0 ? line('Allowance — taxed', 'treated as salary', r.taxableAllowance) : ''}
+    ${r.nonTaxableAllowance > 0 ? line('Allowance — not taxed', 'lands whole', r.nonTaxableAllowance) : ''}
+    <div class="pline tot"><span>Total pay</span><span class="v">₱${money(r.gross)}</span></div>
+  </div>`;
+}
 
 function hero(label, value, note) {
   const [w, c] = money(value).split('.');
@@ -534,12 +618,15 @@ function notices(r) {
 
 function render() {
   const a = parse(inA.value);
-  const opts = { period, isMinimumWageEarner: mwe };
+  const useAllow = allowBox.open;
+  const taxableAllowance = useAllow ? parse(inAT.value) : 0;
+  const nonTaxableAllowance = useAllow ? parse(inAN.value) : 0;
+  const opts = { period, isMinimumWageEarner: mwe, taxableAllowance, nonTaxableAllowance };
   let html = '', nextHtml = '';
 
   if (mode === 'cmp') {
     const b = parse(inB.value);
-    const c = compare({ gross:a, ...opts }, { gross:b, ...opts }, rates);
+    const c = compare({ basic:a, ...opts }, { basic:b, ...opts }, rates);
     const diff = c.netDifference, gd = c.grossDifference;
     html = `<div class="cmp">
         <div class="cmpv"><div class="t">First</div><div class="n">₱${money(c.left.net)}</div><div class="d">from ₱${money(c.left.gross)}</div></div>
@@ -550,16 +637,20 @@ function render() {
       <div class="notice info"><span class="ic">→</span><span>This ignores fare and rent. A job that pays more but costs more to get to can still be the worse offer.</span></div>`;
   } else if (mode === 'rev') {
     const r = grossFromNet(a, opts, rates);
-    html = hero('Ask for this gross', r.gross,
-        `to actually take home ₱${money(r.net)} ${period==='monthly'?'a month':'per payday'}.`)
+    const askFor = (taxableAllowance + nonTaxableAllowance) > 0 ? r.basic : r.gross;
+    const askLabel = (taxableAllowance + nonTaxableAllowance) > 0 ? 'Ask for this basic pay' : 'Ask for this gross';
+    html = hero(askLabel, askFor,
+        `to actually take home ₱${money(r.net)} ${period==='monthly'?'a month':'per payday'}${(taxableAllowance+nonTaxableAllowance)>0?', with your allowances on top':''}.`)
+      + paidBlock(r)
       + rowsFor(r)
       + `<div class="gone"><span class="l">Deductions along the way</span><span class="r">₱${money(r.whereItWent)}</span></div>`;
     html = `<div class="result">${html}</div>` + notices(r);
   } else {
-    const r = computePayroll({ gross:a, ...opts }, rates);
+    const r = computePayroll({ basic:a, ...opts }, rates);
     const daily = r.net > 0 ? r.net / (period==='monthly'?30:15) : 0;
     html = hero('Take home', r.net,
-        `From ₱${money(r.gross)} gross. That is ₱${money(daily)} a day for ${period==='monthly'?30:15} days.`)
+        `From ₱${money(r.gross)} ${(r.taxableAllowance + r.nonTaxableAllowance) > 0 ? 'total pay' : 'gross'}. That is ₱${money(daily)} a day for ${period==='monthly'?30:15} days.`)
+      + paidBlock(r)
       + rowsFor(r)
       + `<div class="gone"><span class="l">Where it went</span><span class="r">₱${money(r.whereItWent)} · ${r.deductionRate}%</span></div>`;
     html = `<div class="result">${html}</div>` + notices(r);
@@ -621,12 +712,16 @@ let sendTimer = null, lastSent = null, asked = false;
 function queueEvent() {
   clearTimeout(sendTimer);
   sendTimer = setTimeout(() => {
-    const gross = parse(inA.value);
-    if (!gross) return;
-    const sig = `${gross}|${period}|${mwe}|${mode}`;
+    const basic = parse(inA.value);
+    if (!basic) return;
+    const useAllow = allowBox.open;
+    const ta = useAllow ? parse(inAT.value) : 0;
+    const na = useAllow ? parse(inAN.value) : 0;
+    const gross = basic + ta + na;
+    const sig = `${basic}|${ta}|${na}|${period}|${mwe}|${mode}`;
     if (sig === lastSent) return;
     lastSent = sig;
-    track({ gross, period, isMwe: mwe, mode, ratesVersion: rates.effective });
+    track({ gross, basic, period, isMwe: mwe, mode, ratesVersion: rates.effective });
     if (!asked && mode === 'take') { asked = true; renderAsk(); }
   }, 1800);
 }
@@ -673,7 +768,7 @@ for (const [id, m] of [['m-take','take'],['m-rev','rev'],['m-cmp','cmp']]) {
     mode = m;
     document.querySelectorAll('.modes button').forEach(b => b.setAttribute('aria-selected', String(b.id===id)));
     fldB.hidden = m !== 'cmp';
-    $('lab-a').textContent = m==='rev' ? 'Take-home you want' : (m==='cmp' ? 'First offer' : (period==='monthly'?'Monthly gross pay':'Gross pay per payday'));
+    $('lab-a').textContent = m==='rev' ? 'Take-home you want' : (m==='cmp' ? 'First offer' : mainLabel());
     $('copy').style.display = m==='take' ? '' : 'none';
     render();
   });
@@ -683,7 +778,7 @@ for (const [id, p] of [['p-m','monthly'],['p-s','semiMonthly']]) {
     period = p;
     $('p-m').setAttribute('aria-pressed', String(p==='monthly'));
     $('p-s').setAttribute('aria-pressed', String(p==='semiMonthly'));
-    if (mode==='take') $('lab-a').textContent = p==='monthly'?'Monthly gross pay':'Gross pay per payday';
+    if (mode==='take') $('lab-a').textContent = mainLabel();
     render();
   });
 }
@@ -716,13 +811,19 @@ $('share').addEventListener('click', async () => {
 });
 $('reset').addEventListener('click', () => {
   inA.value = '25,000'; inB.value = '28,000';
+  inAT.value = ''; inAN.value = ''; allowBox.open = false;
   mode='take'; period='monthly'; mwe=false;
   $('m-take').click(); $('p-m').click();
   $('p-mw').setAttribute('aria-pressed','false');
   render();
 });
 window.addEventListener('pagehide', () => { clearTimeout(sendTimer); });
-for (const el of [inA, inB]) {
+allowBox.addEventListener('toggle', () => {
+  // The main field means something different once allowances are separated out.
+  if (mode === 'take') $('lab-a').textContent = mainLabel();
+  render();
+});
+for (const el of [inA, inB, inAT, inAN]) {
   el.addEventListener('input', () => { const p = el.selectionStart, before = el.value.length;
     el.value = fmtIn(el.value);
     try { el.setSelectionRange(p + (el.value.length - before), p + (el.value.length - before)); } catch {}
