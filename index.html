@@ -178,6 +178,26 @@
     overscroll-behavior:none;
   }
   .wrap{max-width:460px;margin:0 auto}
+
+  /* ---------- two panes on a wide screen ----------
+     A phone gets one column and a short scroll — a fixed-height layout there
+     fights the browser bars and the on-screen keyboard, and loses. A laptop
+     gets both panes side by side: controls left, answer right, nothing below
+     the fold. The breakpoint is the width at which 380px of controls and a
+     readable result can sit together, not a device name. */
+  @media (min-width: 900px){
+    .wrap{max-width:1000px}
+    .app{display:grid;grid-template-columns:376px 1fr;gap:30px;align-items:start}
+    /* The tabs belong to the controls, not to the whole page. Stretched to
+       1000px they read as a site navigation bar, which they are not. */
+    .modes{max-width:376px}
+    header{padding-block:26px 18px}
+    h1{font-size:32px}
+    .sub{max-width:52ch}
+    .privacy{max-width:62ch}
+    details.cover{margin-top:26px}
+    footer{margin-top:18px}
+  }
   .num{font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;font-variant-numeric:tabular-nums}
 
   /* ---------- head ---------- */
@@ -232,6 +252,26 @@
   }
   .inp input::placeholder{color:var(--ink-3);font-weight:400}
 
+  /* One small link instead of a third tab. Reverse is the same screen with
+     the arrow turned round, so it does not deserve equal billing. */
+  .flip, .samelink{
+    appearance:none;border:0;background:none;padding:6px 0 0;
+    font-family:inherit;font-size:13px;font-weight:600;color:var(--keep);
+    cursor:pointer;text-decoration:underline;text-underline-offset:3px;
+  }
+  .samelink{float:right;padding-top:0;font-size:12.5px}
+  #copylink{display:block;margin:-14px 0 20px;color:var(--ink-3);font-weight:500}
+  #copylink:hover{color:var(--keep)}
+  .flip:focus-visible,.samelink:focus-visible{outline:2px solid var(--focus);outline-offset:3px;border-radius:4px}
+
+  .viewsw{display:inline-flex;gap:2px;background:var(--card-2);padding:3px;border-radius:9px;margin-bottom:11px}
+  .viewsw button{
+    appearance:none;border:0;background:transparent;color:var(--ink-3);
+    font-family:inherit;font-size:12.5px;font-weight:600;padding:6px 12px;border-radius:7px;cursor:pointer;
+  }
+  .viewsw button[aria-pressed="true"]{background:var(--card);color:var(--ink)}
+  .viewsw button:focus-visible{outline:2px solid var(--focus);outline-offset:2px}
+
   .segs{display:flex;gap:6px;margin-bottom:20px;flex-wrap:wrap}
   .segs button{
     appearance:none;border:1.5px solid var(--rule);background:var(--card);color:var(--ink-2);
@@ -281,7 +321,27 @@
     font-variant-numeric:tabular-nums;color:var(--gone)}
 
   /* ---------- compare ---------- */
+  .offer + .offer{
+    margin-top:14px;padding-top:16px;border-top:1px dashed var(--rule);
+  }
+
   .cmp{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+  .cmpv.win{border-color:var(--keep);box-shadow:0 0 0 1px var(--keep)}
+  .cmpv .win-tag{
+    display:inline-block;font-family:"IBM Plex Mono",monospace;font-size:9.5px;
+    letter-spacing:.1em;text-transform:uppercase;color:var(--keep);
+    background:var(--keep-soft);border-radius:999px;padding:2px 7px;margin-top:7px;
+  }
+  .cmprow{
+    display:flex;justify-content:space-between;gap:8px;font-size:12px;
+    color:var(--ink-2);padding-block:3px;
+  }
+  .cmprow span:first-child{min-width:0}
+  .cmprow .v{white-space:nowrap}
+  .cmprow + .cmprow{border-top:1px solid var(--rule-soft)}
+  .cmprow .v{font-family:"IBM Plex Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums}
+  .verdictbar.flip{background:var(--warn-soft)}
+  .verdictbar.flip b{color:var(--warn)}
   .cmpv{background:var(--card);border:1px solid var(--rule);border-radius:12px;padding:14px}
   .cmpv .t{font-family:"IBM Plex Mono",monospace;font-size:10px;letter-spacing:.1em;
     text-transform:uppercase;color:var(--ink-3);margin-bottom:6px}
@@ -427,17 +487,19 @@
     <a class="by" href="https://iponpal.com/?utm_source=sweldo&amp;utm_medium=header" rel="noopener">by <span class="wordmark">IponPal</span></a>
   </div>
   <h1>Where did my salary go?</h1>
-  <p class="sub">Type your monthly gross. See every peso that never reaches you, and why.</p>
+  <p class="sub">Type your pay. See what is taken out, and why.</p>
 </header>
 
 <div class="modes" role="tablist" aria-label="Mode">
-  <button role="tab" id="m-take" aria-selected="true" aria-controls="panel">Take-home</button>
-  <button role="tab" id="m-rev" aria-selected="false" aria-controls="panel">Reverse</button>
-  <button role="tab" id="m-cmp" aria-selected="false" aria-controls="panel">Compare</button>
+  <button role="tab" id="m-take" aria-selected="true" aria-controls="panel">My pay</button>
+  <button role="tab" id="m-cmp" aria-selected="false" aria-controls="panel">Two offers</button>
 </div>
 
-<div id="panel">
+<div class="app">
 
+<div class="col-in" id="panel">
+
+  <div class="offer" id="off-a">
   <div class="field">
     <label for="a" id="lab-a">Monthly gross pay</label>
     <div class="inp">
@@ -445,43 +507,71 @@
       <input id="a" type="text" inputmode="decimal" enterkeyhint="done"
              autocomplete="off" value="25,000" aria-labelledby="lab-a">
     </div>
-  </div>
-
-  <div class="field" id="fld-b" hidden>
-    <label for="b" id="lab-b">Second offer</label>
-    <div class="inp">
-      <span class="peso">₱</span>
-      <input id="b" type="text" inputmode="decimal" enterkeyhint="done"
-             autocomplete="off" value="28,000" aria-labelledby="lab-b">
-    </div>
+    <button type="button" class="flip" id="flip">Work it backwards</button>
   </div>
 
   <details class="allow" id="allow">
-    <summary>I also get allowances</summary>
+    <summary>I get allowances</summary>
     <div class="allow-body">
-      <p class="allow-why">Allowances change your take-home, and two of the same size are not worth the same. A non-taxable one lands whole. A taxable one is taxed like salary.</p>
+      <p class="allow-why">₱1,000 that is taxed is worth less than ₱1,000 that is not. Put each one in the right box.</p>
 
       <div class="field">
-        <label for="at">Allowance that is taxed</label>
+        <label for="at">Taxed allowance</label>
         <div class="inp">
           <span class="peso">₱</span>
           <input id="at" type="text" inputmode="decimal" enterkeyhint="done"
                  autocomplete="off" value="" placeholder="0" aria-describedby="at-h">
         </div>
-        <p class="hint" id="at-h">A fixed cash allowance you do not liquidate — transport or communication, paid whether you spend it or not.</p>
+        <p class="hint" id="at-h">Cash you get every payday and do not liquidate. Transport or load allowance, usually.</p>
       </div>
 
       <div class="field">
-        <label for="an">Allowance that is not taxed</label>
+        <label for="an">Tax-free allowance</label>
         <div class="inp">
           <span class="peso">₱</span>
           <input id="an" type="text" inputmode="decimal" enterkeyhint="done"
                  autocomplete="off" value="" placeholder="0" aria-describedby="an-h">
         </div>
-        <p class="hint" id="an-h">De minimis benefits — rice subsidy, uniform, laundry, medical cash allowance — up to the ceiling set for each. Above a ceiling, the excess is taxed.</p>
+        <p class="hint" id="an-h">Rice, uniform, laundry, medical. Each has a limit. Anything above the limit is taxed.</p>
       </div>
     </div>
   </details>
+  </div><!-- /offer A -->
+
+  <div class="offer" id="off-b" hidden>
+    <div class="field">
+      <label for="b" id="lab-b">Second offer</label>
+      <button type="button" class="samelink" id="same">Same as the first</button>
+      <div class="inp">
+        <span class="peso">₱</span>
+        <input id="b" type="text" inputmode="decimal" enterkeyhint="done"
+               autocomplete="off" value="28,000" aria-labelledby="lab-b">
+      </div>
+    </div>
+
+    <details class="allow" id="allow-b">
+      <summary>This one has allowances</summary>
+      <div class="allow-body">
+        <p class="allow-why">Two offers rarely split the same way. One can be all basic pay. The other can hide part of it in allowances.</p>
+        <div class="field">
+          <label for="at-b">Taxed allowance</label>
+          <div class="inp">
+            <span class="peso">₱</span>
+            <input id="at-b" type="text" inputmode="decimal" enterkeyhint="done"
+                   autocomplete="off" value="" placeholder="0">
+          </div>
+        </div>
+        <div class="field">
+          <label for="an-b">Tax-free allowance</label>
+          <div class="inp">
+            <span class="peso">₱</span>
+            <input id="an-b" type="text" inputmode="decimal" enterkeyhint="done"
+                   autocomplete="off" value="" placeholder="0">
+          </div>
+        </div>
+      </div>
+    </details>
+  </div><!-- /offer B -->
 
   <div class="segs" role="group" aria-label="Pay frequency">
     <button id="p-m" aria-pressed="true">Monthly</button>
@@ -489,40 +579,54 @@
     <button id="p-mw" aria-pressed="false" title="Statutory minimum wage earners are exempt from income tax">Minimum wage</button>
   </div>
 
+</div><!-- /col-in -->
+
+<div class="col-out">
+
+  <div class="viewsw" id="viewsw" role="group" aria-label="Show pay per">
+    <button id="v-m" aria-pressed="true">A month</button>
+    <button id="v-y" aria-pressed="false">A year</button>
+  </div>
+
   <div id="out"></div>
 
-  <div class="ask" id="ask" hidden></div>
-
-  <p class="privacy">We keep the number, never you. No account, no email, no way
-  to trace a calculation back to a person &mdash; salaries are recorded rounded and
-  unlinked, which is what makes that true.</p>
-
-</div>
-
-<div class="acts">
+  <div class="acts">
   <button class="primary" id="copy">Copy</button>
   <button id="share">Share</button>
   <button id="reset">Reset</button>
-</div>
+  </div>
 
-<div class="next" id="next"></div>
+  <button type="button" class="flip" id="copylink">Copy a link with this number</button>
+
+  <div class="ask" id="ask" hidden></div>
+
+  <div class="next" id="next"></div>
+
+
+
+</div><!-- /col-out -->
+</div><!-- /app -->
 
 <details class="cover">
   <summary>What this doesn't cover yet</summary>
   <ul>
-    <li>Government employees — GSIS works differently from SSS, and guessing would be worse than not answering.</li>
-    <li>Contractual and talent-fee workers — expanded withholding tax instead of contributions.</li>
+    <li>Government workers. GSIS is not the same as SSS, and a guess would be worse than no answer.</li>
+    <li>Contractual and talent-fee work. That uses expanded withholding tax instead.</li>
     <li>Daily and weekly pay.</li>
-    <li>The ₱90,000 yearly limit on 13th month pay and other benefits. If an allowance goes over its de minimis ceiling, the excess is taxable and counts against that limit — this page does not track it across the year.</li>
+    <li>The ₱90,000 yearly limit on 13th month pay and other benefits. We do not track it across the year.</li>
   </ul>
 </details>
 
+<p class="privacy">We keep the number, not you. No account, no email. Salaries are
+saved rounded off and with nothing attached, so no row can be traced back to
+anyone. Your last entry stays on your own phone.</p>
+
 <footer>
-  <p><strong>This is an estimate.</strong> Your employer's payroll system is the authority. If our number and your payslip disagree, your payslip wins — and we would like to know about it.</p>
-  <p>Withholding uses the BIR's published period table, not annual tax divided by twelve. That is what payroll systems do, so it is what should match your payslip.</p>
+  <p><strong>This is an estimate.</strong> Your payslip is the real answer. If ours does not match, yours wins, and we want to hear about it.</p>
+  <p>We use the BIR table for your pay period, not the yearly tax split twelve ways. That is what payroll systems do, so it should match your payslip.</p>
   <p class="sign">A free tool by
     <a href="https://iponpal.com/?utm_source=sweldo&amp;utm_medium=footer" rel="noopener"><span class="wordmark">IponPal</span></a>
-    — the budgeting app that helps your pay last until the next payday.</p>
+    — the budgeting app that helps your pay last.</p>
   <p class="ver" id="ver"></p>
 </footer>
 
@@ -545,9 +649,59 @@ try {
 } catch { /* fallback stands */ }
 
 const $ = id => document.getElementById(id);
-const out = $('out'), inA = $('a'), inB = $('b'), fldB = $('fld-b');
+const out = $('out'), inA = $('a'), inB = $('b');
 const inAT = $('at'), inAN = $('an'), allowBox = $('allow');
-let mode = 'take', period = 'monthly', mwe = false;
+const inBT = $('at-b'), inBN = $('an-b'), allowBoxB = $('allow-b');
+const offB = $('off-b');
+let mode = 'take', period = 'monthly', mwe = false, annual = false;
+
+/* ---- remembering, and links that carry a number ------------------------
+   The URL wins over storage: a link someone sent you must show THEIR number,
+   not the one you looked at yesterday. Storage only fills an empty page. */
+const LS_LAST = 'sc.last';
+
+function readLink() {
+  try {
+    const q = new URLSearchParams(location.search);
+    const num = k => { const v = q.get(k); const n = v == null ? NaN : parseFloat(v.replace(/[^0-9.]/g,'')); return Number.isFinite(n) && n >= 0 ? n : null; };
+    const g = num('gross');
+    if (g == null) return null;
+    return {
+      basic: g,
+      taxableAllowance: num('at') || 0,
+      nonTaxableAllowance: num('an') || 0,
+      period: q.get('period') === 'semi' ? 'semiMonthly' : 'monthly',
+      mwe: q.get('mwe') === '1',
+    };
+  } catch { return null; }
+}
+
+function readStore() {
+  try {
+    const v = JSON.parse(localStorage.getItem(LS_LAST) || 'null');
+    if (!v || !Number.isFinite(v.basic) || v.basic <= 0) return null;
+    return v;
+  } catch { return null; }
+}
+
+function saveStore() {
+  try {
+    const A = offerA();
+    if (!A.basic) return;
+    localStorage.setItem(LS_LAST, JSON.stringify({ ...A, period, mwe }));
+  } catch { /* private mode, full disk — never worth an error */ }
+}
+
+/** A link that carries the figures on screen. Only ever built on request. */
+function linkForCurrent() {
+  const A = offerA();
+  const q = new URLSearchParams({ gross: String(Math.round(A.basic)) });
+  if (A.taxableAllowance) q.set('at', String(Math.round(A.taxableAllowance)));
+  if (A.nonTaxableAllowance) q.set('an', String(Math.round(A.nonTaxableAllowance)));
+  if (period === 'semiMonthly') q.set('period', 'semi');
+  if (mwe) q.set('mwe', '1');
+  return location.origin + location.pathname + '?' + q.toString();
+}
 
 const money = n => n.toLocaleString('en-PH',{minimumFractionDigits:2,maximumFractionDigits:2});
 const parse = s => { const n = parseFloat(String(s).replace(/[^0-9.]/g,'')); return Number.isFinite(n) ? n : 0; };
@@ -556,6 +710,24 @@ const fmtIn = s => { const n = parse(s); return n ? n.toLocaleString('en-PH',{ma
 /* The main field is "gross pay" only while it is the whole story. Once the
    allowances are broken out it is basic pay, and calling it gross would be a
    lie that quietly changes every number below it. */
+/* One offer's three numbers. The allowance box being closed means zero, not
+   "remember what was typed" — a hidden field that still changes the answer is
+   the oldest trap in form design. */
+function offerA() {
+  return {
+    basic: parse(inA.value),
+    taxableAllowance: allowBox.open ? parse(inAT.value) : 0,
+    nonTaxableAllowance: allowBox.open ? parse(inAN.value) : 0,
+  };
+}
+function offerB() {
+  return {
+    basic: parse(inB.value),
+    taxableAllowance: allowBoxB.open ? parse(inBT.value) : 0,
+    nonTaxableAllowance: allowBoxB.open ? parse(inBN.value) : 0,
+  };
+}
+
 function mainLabel() {
   const split = allowBox.open;
   if (split) return period === 'monthly' ? 'Monthly basic pay' : 'Basic pay per payday';
@@ -563,10 +735,10 @@ function mainLabel() {
 }
 
 const WHY = {
-  sss: 'Five per cent of your salary credit — a stepped bracket, not a flat percentage of your pay. It buys sickness, maternity, disability and retirement benefits. You need 120 monthly contributions, so ten years, before a pension is on the table.',
-  philhealth: 'Two and a half per cent of your salary, matched by your employer. It covers part of a hospital bill, not all of it. Below ₱10,000 you pay as if you earned ₱10,000; above ₱100,000 it stops climbing.',
-  pagibig: 'Two per cent — but it stops at ₱200 a month no matter how much you earn, which is why a ₱200,000 earner pays the same as you. It is what makes you eligible for a housing loan, and the savings are withdrawable after twenty years.',
-  tax: 'Only the amount above ₱20,833 a month is taxed, and only after your contributions come off. The first ₱250,000 you earn in a year is free. Your first job usually pays very little of this.',
+  sss: '5% of your salary credit. That credit moves in steps, so it is not a flat share of your pay. It buys sickness, maternity, disability and retirement cover. A pension needs 120 monthly payments, so ten years.',
+  philhealth: '2.5% of your pay, and your employer pays the same again. It covers part of a hospital bill, never all of it. Below ₱10,000 you pay as if you earned ₱10,000. Above ₱100,000 it stops going up.',
+  pagibig: '2%, but never more than ₱200 a month. Someone on ₱200,000 pays the same ₱200 you do. It is what makes you eligible for a housing loan, and you can take the savings out after twenty years.',
+  tax: 'Only the part above ₱20,833 a month is taxed, and only after SSS, PhilHealth and Pag-IBIG come off. The first ₱250,000 a year is free. In a first job this is usually small.',
 };
 
 /* A block that only appears when there is something to say: how the pay was
@@ -577,13 +749,20 @@ function paidBlock(r) {
   const line = (l, sub, v) =>
     `<div class="pline"><span>${l}${sub ? `<small>${sub}</small>` : ''}</span><span class="v">₱${money(v)}</span></div>`;
   return `<div class="paid">
-    <div class="cap">What you were paid</div>
-    ${line('Basic pay', '', r.basic)}
-    ${r.taxableAllowance > 0 ? line('Allowance — taxed', 'treated as salary', r.taxableAllowance) : ''}
-    ${r.nonTaxableAllowance > 0 ? line('Allowance — not taxed', 'lands whole', r.nonTaxableAllowance) : ''}
-    <div class="pline tot"><span>Total pay</span><span class="v">₱${money(r.gross)}</span></div>
+    <div class="cap">Your pay</div>
+    ${line('Basic pay', '', sc(r.basic))}
+    ${r.taxableAllowance > 0 ? line('Taxed allowance', '', sc(r.taxableAllowance)) : ''}
+    ${r.nonTaxableAllowance > 0 ? line('Tax-free allowance', '', sc(r.nonTaxableAllowance)) : ''}
+    <div class="pline tot"><span>Total pay</span><span class="v">₱${money(sc(r.gross))}</span></div>
   </div>`;
 }
+
+/* How many pay periods in a year. The year view is simply the payslip twelve
+   or twenty-four times over — not an annual tax return, which nets off the
+   whole year at once. The label says so. */
+const perYear = () => (period === 'monthly' ? 12 : 24);
+const sc = v => annual ? v * perYear() : v;
+const per = () => annual ? 'a year' : (period === 'monthly' ? 'a month' : 'a payday');
 
 function hero(label, value, note) {
   const [w, c] = money(value).split('.');
@@ -596,10 +775,10 @@ function hero(label, value, note) {
 
 function rowsFor(r) {
   const rows = [
-    ['sss','SSS','on a ₱'+money(r.meta.sssMSC)+' salary credit', r.contributions.sss],
-    ['philhealth','PhilHealth','2.5% of salary', r.contributions.philhealth],
-    ['pagibig','Pag-IBIG','2%, capped at ₱200', r.contributions.pagibig],
-    ['tax','Withholding tax', r.meta.isMinimumWageEarner ? 'minimum wage — exempt' : 'on ₱'+money(r.taxableIncome)+' taxable', r.withholdingTax],
+    ['sss','SSS','on a ₱'+money(r.meta.sssMSC)+' salary credit', sc(r.contributions.sss)],
+    ['philhealth','PhilHealth','2.5% of your pay', sc(r.contributions.philhealth)],
+    ['pagibig','Pag-IBIG','2%, never more than ₱200', sc(r.contributions.pagibig)],
+    ['tax','Tax', r.meta.isMinimumWageEarner ? 'minimum wage, so none' : 'on ₱'+money(sc(r.taxableIncome))+' taxable', sc(r.withholdingTax)],
   ];
   return `<div class="rows">` + rows.map(([k,l,s,v],i)=>`
     <button class="row" type="button" aria-expanded="false" data-why="w-${k}">
@@ -617,48 +796,84 @@ function notices(r) {
 }
 
 function render() {
-  const a = parse(inA.value);
-  const useAllow = allowBox.open;
-  const taxableAllowance = useAllow ? parse(inAT.value) : 0;
-  const nonTaxableAllowance = useAllow ? parse(inAN.value) : 0;
+  const A = offerA();
+  const a = A.basic;
+  const taxableAllowance = A.taxableAllowance;
+  const nonTaxableAllowance = A.nonTaxableAllowance;
   const opts = { period, isMinimumWageEarner: mwe, taxableAllowance, nonTaxableAllowance };
   let html = '', nextHtml = '';
 
   if (mode === 'cmp') {
-    const b = parse(inB.value);
-    const c = compare({ basic:a, ...opts }, { basic:b, ...opts }, rates);
+    const B = offerB();
+    const shared = { period, isMinimumWageEarner: mwe };
+    const c = compare({ ...A, ...shared }, { ...B, ...shared }, rates);
+    const L = c.left, R = c.right;
     const diff = c.netDifference, gd = c.grossDifference;
-    html = `<div class="cmp">
-        <div class="cmpv"><div class="t">First</div><div class="n">₱${money(c.left.net)}</div><div class="d">from ₱${money(c.left.gross)}</div></div>
-        <div class="cmpv"><div class="t">Second</div><div class="n">₱${money(c.right.net)}</div><div class="d">from ₱${money(c.right.gross)}</div></div>
-      </div>
-      <div class="verdictbar">The second pays <b>₱${money(Math.abs(gd))}</b> more gross, but only
-        <b>₱${money(Math.abs(diff))}</b> more in your pocket${gd !== 0 ? ` — ${Math.round((1-Math.abs(diff)/Math.abs(gd))*100)}% of the raise goes to deductions` : ''}.</div>
-      <div class="notice info"><span class="ic">→</span><span>This ignores fare and rent. A job that pays more but costs more to get to can still be the worse offer.</span></div>`;
+
+    // The two offers can now differ in shape, not only in size. When the
+    // smaller package takes home more, that is the finding — say it first.
+    const flip = (gd > 0 && diff < 0) || (gd < 0 && diff > 0);
+    const winRight = diff > 0;
+    const side = (r, name, isWin) => `
+      <div class="cmpv${isWin && diff !== 0 ? ' win' : ''}">
+        <div class="t">${name}</div>
+        <div class="n">₱${money(sc(r.net))}</div>
+        <div class="cmprow"><span>Total pay</span><span class="v">₱${money(sc(r.gross))}</span></div>
+        ${(r.taxableAllowance + r.nonTaxableAllowance) > 0
+          ? `<div class="cmprow"><span>Allowance</span><span class="v">₱${money(sc(r.taxableAllowance + r.nonTaxableAllowance))}</span></div>` : ''}
+        <div class="cmprow"><span>Taken out</span><span class="v">−₱${money(sc(r.totalDeductions))}</span></div>
+        ${isWin && diff !== 0 ? `<span class="win-tag">Takes home more</span>` : ''}
+      </div>`;
+
+    let verdict;
+    if (diff === 0) {
+      verdict = `<div class="verdictbar">Both land <b>₱${money(sc(L.net))}</b> in your pocket. Decide on something other than the money.</div>`;
+    } else if (flip) {
+      verdict = `<div class="verdictbar flip">The ${gd > 0 ? 'second' : 'first'} offer has the bigger headline —
+        <b>₱${money(sc(Math.abs(gd)))}</b> more total pay — but the ${gd > 0 ? 'first' : 'second'} one puts
+        <b>₱${money(sc(Math.abs(diff)))}</b> more in your pocket. How a package is split matters more than its size here.</div>`;
+    } else if (Math.abs(diff) > Math.abs(gd)) {
+      // More lands than the headline gap. Only a non-taxable split can do this:
+      // the bigger offer is also the more lightly taxed one.
+      verdict = `<div class="verdictbar">The ${winRight ? 'second' : 'first'} offer pays
+        <b>₱${money(sc(Math.abs(gd)))}</b> more in total — but <b>₱${money(sc(Math.abs(diff)))}</b> more lands.
+        More than the gap, because part of it is not taxed.</div>`;
+    } else {
+      const kept = Math.abs(gd) > 0 ? Math.round((Math.abs(diff)/Math.abs(gd))*100) : 100;
+      verdict = `<div class="verdictbar">The ${winRight ? 'second' : 'first'} offer pays
+        <b>₱${money(sc(Math.abs(gd)))}</b> more in total, and <b>₱${money(sc(Math.abs(diff)))}</b> of that actually lands —
+        <b>${kept}%</b>. The rest goes to deductions.</div>`;
+    }
+
+    html = `<div class="cmp">${side(L,'First',!winRight)}${side(R,'Second',winRight)}</div>`
+      + verdict
+      + notices({ warnings: [...new Map([...L.warnings, ...R.warnings].map(w => [w.code, w])).values()] })
+      + `<div class="notice info"><span class="ic">→</span><span>Fare and rent are not counted here. A job that pays more can still cost more to get to.</span></div>`;
   } else if (mode === 'rev') {
     const r = grossFromNet(a, opts, rates);
-    const askFor = (taxableAllowance + nonTaxableAllowance) > 0 ? r.basic : r.gross;
-    const askLabel = (taxableAllowance + nonTaxableAllowance) > 0 ? 'Ask for this basic pay' : 'Ask for this gross';
-    html = hero(askLabel, askFor,
-        `to actually take home ₱${money(r.net)} ${period==='monthly'?'a month':'per payday'}${(taxableAllowance+nonTaxableAllowance)>0?', with your allowances on top':''}.`)
+    const hasAl = (taxableAllowance + nonTaxableAllowance) > 0;
+    html = hero(hasAl ? 'Ask for this basic pay' : 'Ask for this pay', sc(hasAl ? r.basic : r.gross),
+        `to take home ₱${money(sc(r.net))} ${per()}${hasAl ? ', with your allowances on top' : ''}.`)
       + paidBlock(r)
       + rowsFor(r)
-      + `<div class="gone"><span class="l">Deductions along the way</span><span class="r">₱${money(r.whereItWent)}</span></div>`;
+      + `<div class="gone"><span class="l">Taken out</span><span class="r">₱${money(sc(r.whereItWent))}</span></div>`;
     html = `<div class="result">${html}</div>` + notices(r);
   } else {
     const r = computePayroll({ basic:a, ...opts }, rates);
     const daily = r.net > 0 ? r.net / (period==='monthly'?30:15) : 0;
-    html = hero('Take home', r.net,
-        `From ₱${money(r.gross)} ${(r.taxableAllowance + r.nonTaxableAllowance) > 0 ? 'total pay' : 'gross'}. That is ₱${money(daily)} a day for ${period==='monthly'?30:15} days.`)
+    const note = annual
+      ? `From ₱${money(sc(r.gross))} a year. That is your payslip ${perYear()} times over, not a tax return.`
+      : `From ₱${money(r.gross)} pay. That is ₱${money(daily)} a day.`;
+    html = hero('Take home', sc(r.net), note)
       + paidBlock(r)
       + rowsFor(r)
-      + `<div class="gone"><span class="l">Where it went</span><span class="r">₱${money(r.whereItWent)} · ${r.deductionRate}%</span></div>`;
+      + `<div class="gone"><span class="l">Taken out</span><span class="r">₱${money(sc(r.whereItWent))} · ${r.deductionRate}%</span></div>`;
     html = `<div class="result">${html}</div>` + notices(r);
 
     if (r.net > 0) {
       nextHtml = `<div class="h">₱${money(daily)} a day.</div>
-        <p>That is what you actually have to work with. <span class="who">IponPal</span> can tell you whether it lasts until the next payday.</p>
-        <a href="https://app.iponpal.com/?income=${Math.round(r.net)}&utm_source=sweldo&utm_medium=result" rel="noopener">Open IponPal with this figure →</a>`;
+        <p>That is what you have to work with each day. <span class="who">IponPal</span> can tell you if it lasts.</p>
+        <a href="https://app.iponpal.com/?income=${Math.round(r.net)}&utm_source=sweldo&utm_medium=result" rel="noopener">Open IponPal with this number →</a>`;
     }
   }
 
@@ -676,6 +891,7 @@ function render() {
   });
 
   queueEvent();
+  saveStore();
 }
 
 function summaryText() {
@@ -735,8 +951,8 @@ function renderAsk() {
   box.className = 'ask';
   box.innerHTML = `
     <div class="q">${q.prompt}</div>
-    <p class="why">One question. It is how a real picture of Filipino pay gets
-      built &mdash; and we only ever show a range once five people have reported it.</p>
+    <p class="why">One question only. It is how we build a real picture of Filipino pay.
+      We never show a range until five people have answered.</p>
     <div class="chips">
       ${q.options.map(o => `<button type="button" data-v="${o}">${o}</button>`).join('')}
       <button type="button" class="skip" data-v="">Skip</button>
@@ -763,13 +979,40 @@ function renderAsk() {
 }
 
 /* ---- wiring ---- */
-for (const [id, m] of [['m-take','take'],['m-rev','rev'],['m-cmp','cmp']]) {
+function setMode(m) {
+  mode = m;
+  const tabId = m === 'cmp' ? 'm-cmp' : 'm-take';
+  document.querySelectorAll('.modes button').forEach(b => b.setAttribute('aria-selected', String(b.id === tabId)));
+  offB.hidden = m !== 'cmp';
+  $('flip').hidden = m === 'cmp';
+  $('flip').textContent = m === 'rev' ? 'Back to my pay' : 'Work it backwards';
+  $('lab-a').textContent = m === 'rev' ? 'Take-home you want'
+                         : (m === 'cmp' ? 'First offer' : mainLabel());
+  $('copy').style.display = m === 'take' ? '' : 'none';
+  $('copylink').hidden = m === 'cmp';
+  render();
+}
+$('m-take').addEventListener('click', () => setMode(mode === 'rev' ? 'rev' : 'take'));
+$('m-cmp').addEventListener('click', () => setMode('cmp'));
+$('flip').addEventListener('click', () => setMode(mode === 'rev' ? 'take' : 'rev'));
+
+/* Offer B usually differs from offer A by one number. Retyping the other
+   five is the kind of work a tool should do. */
+$('same').addEventListener('click', () => {
+  inB.value = inA.value;
+  inBT.value = allowBox.open ? inAT.value : '';
+  inBN.value = allowBox.open ? inAN.value : '';
+  allowBoxB.open = allowBox.open && (parse(inAT.value) > 0 || parse(inAN.value) > 0);
+  render();
+  toast('Copied the first offer');
+});
+
+/* A month or a year. The same payslip, counted differently. */
+for (const [id, on] of [['v-m', false], ['v-y', true]]) {
   $(id).addEventListener('click', () => {
-    mode = m;
-    document.querySelectorAll('.modes button').forEach(b => b.setAttribute('aria-selected', String(b.id===id)));
-    fldB.hidden = m !== 'cmp';
-    $('lab-a').textContent = m==='rev' ? 'Take-home you want' : (m==='cmp' ? 'First offer' : mainLabel());
-    $('copy').style.display = m==='take' ? '' : 'none';
+    annual = on;
+    $('v-m').setAttribute('aria-pressed', String(!on));
+    $('v-y').setAttribute('aria-pressed', String(on));
     render();
   });
 }
@@ -809,11 +1052,22 @@ $('share').addEventListener('click', async () => {
     catch { toast('Could not share on this device'); }
   }
 });
+/* The only way a salary ever reaches the address bar, and only when asked.
+   The page never writes the number into the URL by itself — a figure sitting
+   in browser history is not something to do to someone quietly. */
+$('copylink').addEventListener('click', async () => {
+  try { await navigator.clipboard.writeText(linkForCurrent()); toast('Link copied. It opens on this number.'); }
+  catch { toast('Could not copy on this device'); }
+});
+
 $('reset').addEventListener('click', () => {
   inA.value = '25,000'; inB.value = '28,000';
   inAT.value = ''; inAN.value = ''; allowBox.open = false;
-  mode='take'; period='monthly'; mwe=false;
-  $('m-take').click(); $('p-m').click();
+  inBT.value = ''; inBN.value = ''; allowBoxB.open = false;
+  mode='take'; period='monthly'; mwe=false; annual=false;
+  $('v-m').setAttribute('aria-pressed','true'); $('v-y').setAttribute('aria-pressed','false');
+  try { localStorage.removeItem(LS_LAST); } catch {}
+  setMode('take'); $('p-m').click();
   $('p-mw').setAttribute('aria-pressed','false');
   render();
 });
@@ -823,15 +1077,32 @@ allowBox.addEventListener('toggle', () => {
   if (mode === 'take') $('lab-a').textContent = mainLabel();
   render();
 });
-for (const el of [inA, inB, inAT, inAN]) {
+allowBoxB.addEventListener('toggle', render);
+for (const el of [inA, inB, inAT, inAN, inBT, inBN]) {
   el.addEventListener('input', () => { const p = el.selectionStart, before = el.value.length;
     el.value = fmtIn(el.value);
     try { el.setSelectionRange(p + (el.value.length - before), p + (el.value.length - before)); } catch {}
     render(); });
 }
 
-$('ver').textContent = 'Rates effective ' + rates.effective + ' · not yet verified against primary sources';
-render();
+$('ver').textContent = 'Rates effective ' + rates.effective + ' · not yet checked against the official tables';
+
+/* Open on something real: the number in the link, else the one from last
+   time, else the example. An empty box teaches nobody anything. */
+(function boot() {
+  const seed = readLink() || readStore();
+  if (!seed) { setMode('take'); return; }
+  inA.value = seed.basic.toLocaleString('en-PH', { maximumFractionDigits: 2 });
+  if (seed.taxableAllowance || seed.nonTaxableAllowance) {
+    allowBox.open = true;
+    if (seed.taxableAllowance) inAT.value = seed.taxableAllowance.toLocaleString('en-PH');
+    if (seed.nonTaxableAllowance) inAN.value = seed.nonTaxableAllowance.toLocaleString('en-PH');
+  }
+  if (seed.period === 'semiMonthly') { period = 'semiMonthly';
+    $('p-m').setAttribute('aria-pressed','false'); $('p-s').setAttribute('aria-pressed','true'); }
+  if (seed.mwe) { mwe = true; $('p-mw').setAttribute('aria-pressed','true'); }
+  setMode('take');
+})();
 </script>
 
 </body>
